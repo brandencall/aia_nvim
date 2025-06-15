@@ -1,0 +1,5 @@
+Start model on server:
+./bin/llama-server -m ../starcoder2-3b-Q4_K_M.gguf --host 0.0.0.0 --port 8080 --threads 4 --ctx-size 8192
+
+Request to model:
+curl -X POST http://brabs@server.brabs:8080/completion -H "Content-Type: application/json" -d '{"prompt": "def add(a, b):\n    return ", "n_predict": 50, "stop": ["\n"]}'
