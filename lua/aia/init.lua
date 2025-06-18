@@ -1,23 +1,6 @@
 local M = {}
 
-
-M.autoComplete = function()
-    local cursorPos = vim.api.nvim_win_get_cursor(0)
-    local row = cursorPos[1]
-    local prefix = vim.api.nvim_buf_get_lines(0, 0, row, false)
-    local prompt = table.concat(prefix, "\n")
-    local suffix = vim.api.nvim_buf_get_lines(0, row, -1, false)
-
-    local request = vim.fn.json_encode({
-        prompt = prefix,
-        suffix = suffix,
-        n_predict = 100,
-    })
-    local curl_cmd = string.format(
-        "curl -X POST http://brabs@server.brabs:8080/completion -H 'Content-Type: application/json' -d '%s'", request)
-    local response = vim.fn.system(curl_cmd)
-    print(response)
-end
+local ui = require("aia.ui");
 
 M.testConnection = function()
     local websocket = require 'websocket.client'
@@ -63,7 +46,6 @@ M.testConnection = function()
 end
 
 
-vim.api.nvim_create_user_command("AiaTest", M.autoComplete, { desc = "test" })
 vim.api.nvim_create_user_command("ConTest", M.testConnection, { desc = "test" })
 
 return M

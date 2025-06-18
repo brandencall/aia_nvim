@@ -1,0 +1,14 @@
+Hugging face cURL request that works:
+curl https://router.huggingface.co/novita/v3/openai/chat/completions \
+    -H "Authorization: Bearer $HF_TOKEN" \
+    -H 'Content-Type: application/json' \
+    -d '{
+        "messages": [
+            {
+                "role": "user",
+                "content": "How many G in huggingface?"
+            }
+        ],
+        "model": "deepseek/deepseek-v3-0324",
+        "stream": false
+    }'
