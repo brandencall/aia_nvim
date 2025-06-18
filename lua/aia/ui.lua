@@ -24,7 +24,7 @@ M.create_side_win = function()
         "This is the content buffer.",
         "You can fill it with search results or text.",
     })
-    vim.api.nvim_buf_set_option(content_buf, "wrap", true)
+    vim.api.nvim_set_option_value("wrap", true, { win = content_win })
 
     prompt_buf = vim.api.nvim_create_buf(false, true)
     local prompt_opts = {
@@ -34,7 +34,7 @@ M.create_side_win = function()
     }
     prompt_win = vim.api.nvim_open_win(prompt_buf, true, prompt_opts)
     vim.api.nvim_buf_set_lines(prompt_buf, 0, -1, false, { "Prompt: " })
-    vim.api.nvim_buf_set_option(prompt_buf, "wrap", true)
+    vim.api.nvim_set_option_value("wrap", true, { win = content_win })
 
     vim.api.nvim_win_set_cursor(prompt_win, { 1, 8 }) -- After "Prompt: "
     vim.cmd("startinsert")
