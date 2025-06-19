@@ -8,6 +8,7 @@ local prompt_buf
 M.sideWin = function()
     M.create_side_win()
     M.setup_auto_close()
+    M.on_submit()
 end
 
 M.create_side_win = function()
@@ -34,7 +35,7 @@ M.create_side_win = function()
     }
     prompt_win = vim.api.nvim_open_win(prompt_buf, true, prompt_opts)
     vim.api.nvim_buf_set_lines(prompt_buf, 0, -1, false, { "Prompt: " })
-    vim.api.nvim_set_option_value("wrap", true, { win = content_win })
+    vim.api.nvim_set_option_value("wrap", true, { win = prompt_win })
 
     vim.api.nvim_win_set_cursor(prompt_win, { 1, 8 }) -- After "Prompt: "
     vim.cmd("startinsert")
@@ -59,8 +60,21 @@ M.setup_auto_close = function()
     vim.api.nvim_create_autocmd("WinClosed", {
         pattern = { tostring(content_win), tostring(prompt_win) },
         callback = M.close_windows,
-        once = true,     -- Run only once to avoid repeated triggers
+        once = true, -- Run only once to avoid repeated triggers
     })
+end
+
+M.on_submit = function()
+    vim.keymap.set("i", "<CR>", function()
+        local lines = vim.api.nvim_buf_get_lines(prompt_buf, 0, -1, false)
+        local input = table.concat(lines, "\n"):sub(8) --Prompt prefix removed
+        print("User input: " .. input)
+
+        vim.api.nvim_exec_autocmds("User", {
+            pattern = "OnPromptSubmit",
+            data = { input = input },
+        })
+    end, { buffer = prompt_buf, noremap = true, silent = true, expr = true })
 end
 
 vim.api.nvim_create_user_command("SideWin", M.sideWin, { desc = "test" })
