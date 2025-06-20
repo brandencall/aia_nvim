@@ -41,6 +41,10 @@ M.create_side_win = function()
     vim.cmd("startinsert")
 end
 
+M.set_content_text = function(content)
+    vim.api.nvim_buf_set_lines(content_buf, 0, -1, false, { content })
+end
+
 M.close_windows = function()
     if vim.api.nvim_win_is_valid(content_win) then
         vim.api.nvim_win_close(content_win, true)
