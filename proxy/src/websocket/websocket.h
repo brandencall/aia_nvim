@@ -17,8 +17,10 @@ class WebSocket {
     WebSocket();
     ~WebSocket();
 
+
+    void on_open(connection_hdl hdl);
+    void on_message(connection_hdl hdl, message_ptr msg);
     bool setup_ws_server(int port);
-    static void on_message(connection_hdl hdl, message_ptr msg, server *s);
 
   private:
     server wsServer;

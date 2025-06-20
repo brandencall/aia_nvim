@@ -68,7 +68,6 @@ M.on_submit = function()
     vim.keymap.set("i", "<CR>", function()
         local lines = vim.api.nvim_buf_get_lines(prompt_buf, 0, -1, false)
         local input = table.concat(lines, "\n"):sub(8) --Prompt prefix removed
-        print("User input: " .. input)
 
         vim.api.nvim_exec_autocmds("User", {
             pattern = "OnPromptSubmit",

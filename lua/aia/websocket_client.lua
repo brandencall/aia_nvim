@@ -3,6 +3,9 @@ local M = {}
 local websocket = require 'websocket.client'
 local copas = require 'copas'
 
+local ws_connection = nil
+local timer = nil
+
 local function log(msg)
     vim.schedule(function()
         print(msg)
@@ -10,7 +13,7 @@ local function log(msg)
 end
 
 M.create_connection = function()
-    local ws_connection = websocket.copas()
+    ws_connection = websocket.copas()
 
     local function connect()
         local ok, err = ws_connection:connect('ws://server.brabs:9002')
@@ -20,76 +23,58 @@ M.create_connection = function()
         end
         log('Connected to ws://server.brabs:9002')
         copas.sleep(0) -- Yield to allow other tasks
+        return ws_connection
     end
 
     copas.addthread(connect)
-    copas.loop()
-    return ws_connection
 end
 
-M.send_prompt = function(ws, prompt)
-    if not ws or ws.state ~= 'OPEN' then
+M.send_prompt = function(prompt)
+    if not ws_connection or ws_connection.state ~= 'OPEN' then
         print('connection not established yet')
     end
 
+    P(ws_connection)
     local function send_to_server()
-        local ok, err = ws:send(prompt)
+        ---@diagnostic disable-next-line: undefined-field
+        local ok, err = ws_connection:send(prompt)
         if ok then
             log('Sent: ' .. prompt)
-            return true
         else
             log('Send error: ' .. (err or 'Unknown error'))
-            return false
         end
         copas.sleep(0)
     end
 
     copas.addthread(send_to_server)
-    copas.loop()
+end
+
+M.close = function()
+    if ws_connection and ws_connection.state == 'OPEN' then
+        ---@diagnostic disable-next-line: undefined-field
+        ws_connection:close()
+        ws_connection = nil
+    end
+    if timer then
+        timer:stop()
+        timer:close()
+        timer = nil
+    end
 end
 
 M.start = function()
     M.create_connection()
-end
-
-M.testConnection = function(input)
-    -- Create an asynchronous WebSocket client
-    local ws = websocket.copas()
-
-    -- Define the WebSocket task
-    local function websocket_task()
-        -- Connect to WebSocket server
-        local ok, err = ws:connect('ws://server.brabs:9002')
-        if not ok then
-            print('Failed to connect: ' .. (err or 'Unknown error'))
-            return
-        end
-        print('Connected to ws://server.brabs:9002')
-
-        -- Send a test message
-        local ok, err = ws:send(input)
-        if ok then
-            print('Sent: Hello from Lua!')
-        else
-            print('Send error: ' .. (err or 'Unknown error'))
-        end
-
-        local message, err = ws:receive()
-        if message then
-            print('Received: ' .. message)
-        elseif err == 'closed' then
-            print('Connection closed: ' .. (err or 'Unknown error'))
-        elseif err then
-            print('Receive error: ' .. (err or 'Unknown error'))
-        end
-        copas.sleep(0) -- Yield to allow other tasks
+    vim.api.nvim_create_autocmd('VimLeave', {
+        callback = function()
+            M.close()
+        end,
+    })
+    if not timer then
+        timer = vim.loop.new_timer()
+        timer:start(0, 10, vim.schedule_wrap(function()
+            copas.step(0.01) -- Process Copas tasks for 10ms
+        end))
     end
-
-    -- Add the WebSocket task to copas
-    copas.addthread(websocket_task)
-
-    -- Run the event loop
-    copas.loop()
 end
 
 return M
