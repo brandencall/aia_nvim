@@ -24,6 +24,7 @@ M.create_side_win = function()
     vim.api.nvim_buf_set_lines(content_buf, 0, -1, false, {
         "This is the content buffer.",
         "You can fill it with search results or text.",
+        "",
     })
     vim.api.nvim_set_option_value("wrap", true, { win = content_win })
 
@@ -42,7 +43,19 @@ M.create_side_win = function()
 end
 
 M.set_content_text = function(content)
-    vim.api.nvim_buf_set_lines(content_buf, 0, -1, false, { content })
+    local last_line = vim.api.nvim_buf_line_count(content_buf)
+    if (content == "Processing...") then
+        vim.api.nvim_buf_set_lines(content_buf, last_line, -1, false, { content })
+    else
+        local result = "BOT: " .. content
+        vim.api.nvim_buf_set_lines(content_buf, last_line - 1, -1, false, { result, "" })
+    end
+end
+
+M.set_user_content = function(prompt)
+    local last_line = vim.api.nvim_buf_line_count(content_buf)
+    local content = "You: " .. prompt
+    vim.api.nvim_buf_set_lines(content_buf, last_line, -1, false, { content })
 end
 
 M.close_windows = function()
@@ -72,6 +85,13 @@ M.on_submit = function()
     vim.keymap.set("i", "<CR>", function()
         local lines = vim.api.nvim_buf_get_lines(prompt_buf, 0, -1, false)
         local input = table.concat(lines, "\n"):sub(8) --Prompt prefix removed
+
+        vim.schedule(function()
+            M.set_user_content(input)
+        end)
+        vim.schedule(function()
+            vim.api.nvim_buf_set_lines(prompt_buf, 0, -1, false, { "Prompt:" })
+        end)
 
         vim.api.nvim_exec_autocmds("User", {
             pattern = "OnPromptSubmit",
