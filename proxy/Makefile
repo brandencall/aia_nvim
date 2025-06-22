@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra 
-LDFLAGS = -lgtest -lgtest_main -pthread
+LDFLAGS = -lgtest -lgtest_main -pthread -lcurl
 
 SRC_DIR = src
 INCLUDE_DIR = -I/usr/include 
