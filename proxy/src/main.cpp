@@ -1,5 +1,7 @@
 #include "tcp/tcp.h"
+#include <thread>
 #include <unistd.h>
+
 
 int main() {
     const char *ip = "10.0.0.234";
@@ -9,9 +11,8 @@ int main() {
         return -1;
     while (true) {
         int clientSocket = acceptClient(serverSocket);
-        if (clientSocket != -1) {
-            handleClient(clientSocket);
-        }
+        if (clientSocket == -1) break;
+        std::thread(clientSession, clientSocket).detach();
     }
     close(serverSocket);
     return 0;

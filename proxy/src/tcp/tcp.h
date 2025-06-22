@@ -4,4 +4,6 @@
 
 int createServerSocket(const char* ip, int port);
 int acceptClient(int serverSocket);
-void handleClient(int clientSocket);
+void clientSession(int clientSocket);
+std::string handleClient(int clientSocket);
+void sendMsg(int clientSocket, std::string msg);

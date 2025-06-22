@@ -9,8 +9,8 @@
 #include <string>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <unistd.h>
 #include <thread>
+#include <unistd.h>
 
 int createServerSocket(const char *ip, int port) {
     int serverSocket;
@@ -69,30 +69,42 @@ int acceptClient(int serverSocket) {
     return clientSocket;
 }
 
-void handleClient(int clientSocket) {
-    char buffer[1024];
-    while (true) {
-        std::memset(buffer, 0, 1024);
-        ssize_t bytesReceived = recv(clientSocket, buffer, 1024 - 1, 0);
+void process_prompt(int clientSocket, std::string prompt) {
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    std::string placeholder = "This will be the LLM response!";
+    std::cout << placeholder << std::endl;
+    std::cout << "This is the given prompt: " << prompt << std::endl;
+    sendMsg(clientSocket, placeholder);
+}
 
-        if (bytesReceived == 0) {
-            std::cout << "Client disconnected gracefully" << std::endl;
+void clientSession(int clientSocket) {
+    while (true) {
+        std::string prompt = handleClient(clientSocket);
+        if (prompt.empty())
             break;
-        } else if (bytesReceived < 0) {
-            perror("recv failed");
-            break;
-        } else {
-            std::cout << "Client said: " << std::string(buffer) << std::endl;
-            std::string confirmation = "Processing...";
-            send(clientSocket, confirmation.c_str(), confirmation.size(), 0);
-            std::cout << confirmation << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(2));
-            // std::string result = process_request(std::string(buffer));
-            // send(clientSocket, result.c_str, result.size(), 0);
-            std::string placeholder ="This will be the LLM response!"; 
-            std::cout << placeholder << std::endl;
-            send(clientSocket, placeholder.c_str(), placeholder.size(), 0);
-        }
+        process_prompt(clientSocket, prompt);
     }
     close(clientSocket);
 }
+
+std::string handleClient(int clientSocket) {
+    char buffer[1024];
+    std::memset(buffer, 0, 1024);
+    ssize_t bytesReceived = recv(clientSocket, buffer, 1024 - 1, 0);
+
+    if (bytesReceived == 0) {
+        std::cout << "Client disconnected gracefully" << std::endl;
+        return "";
+    } else if (bytesReceived < 0) {
+        perror("recv failed");
+        return "";
+    } else {
+        std::cout << "Client said: " << std::string(buffer) << std::endl;
+        std::string confirmation = "Processing...";
+        sendMsg(clientSocket, confirmation);
+        std::cout << confirmation << std::endl;
+        return std::string(buffer);
+    }
+}
+
+void sendMsg(int clientSocket, std::string msg) { send(clientSocket, msg.c_str(), msg.size(), 0); }
