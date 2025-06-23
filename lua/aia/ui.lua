@@ -100,6 +100,4 @@ M.on_submit = function()
     end, { buffer = prompt_buf, noremap = true, silent = true, expr = true })
 end
 
-vim.api.nvim_create_user_command("SideWin", M.sideWin, { desc = "test" })
-
 return M

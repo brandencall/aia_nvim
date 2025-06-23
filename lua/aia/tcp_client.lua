@@ -16,7 +16,6 @@ M.connect_tcp = function()
             print('TCP error: ' .. err)
             return
         end
-        print('TCP connected!')
         M.client:read_start(function(err, data)
             if err then
                 print('Read error: ' .. err)
@@ -25,7 +24,6 @@ M.connect_tcp = function()
                 return
             end
             if data then
-                print('Received: ' .. data)
                 vim.schedule(function()
                     vim.api.nvim_exec_autocmds("User", {
                         pattern = "ServerResponse",
@@ -33,7 +31,6 @@ M.connect_tcp = function()
                     })
                 end)
             else
-                print('TCP connection closed')
                 M.client:close()
                 M.client = nil
             end
