@@ -13,8 +13,8 @@ end
 
 M.create_side_win = function()
     content_buf = vim.api.nvim_create_buf(false, true)
-    local width = math.floor(vim.o.columns * 0.4)
-    local height = math.floor(vim.o.lines * 0.7)
+    local width = math.floor(vim.o.columns * 0.5)
+    local height = math.floor(vim.o.lines * 0.8)
     local content_opts = {
         split = "right",
         width = width,
@@ -27,6 +27,8 @@ M.create_side_win = function()
         "",
     })
     vim.api.nvim_set_option_value("wrap", true, { win = content_win })
+    vim.api.nvim_set_option_value("linebreak", true, { win = content_win })
+    vim.api.nvim_set_option_value("breakindent", true, { win = content_win })
 
     prompt_buf = vim.api.nvim_create_buf(false, true)
     local prompt_opts = {
@@ -37,6 +39,8 @@ M.create_side_win = function()
     prompt_win = vim.api.nvim_open_win(prompt_buf, true, prompt_opts)
     vim.api.nvim_buf_set_lines(prompt_buf, 0, -1, false, { "Prompt: " })
     vim.api.nvim_set_option_value("wrap", true, { win = prompt_win })
+    vim.api.nvim_set_option_value("linebreak", true, { win = prompt_win })
+    vim.api.nvim_set_option_value("breakindent", true, { win = prompt_win })
 
     vim.api.nvim_win_set_cursor(prompt_win, { 1, 8 }) -- After "Prompt: "
     vim.cmd("startinsert")
@@ -48,7 +52,12 @@ M.set_content_text = function(content)
         vim.api.nvim_buf_set_lines(content_buf, last_line, -1, false, { content })
     else
         local result = "BOT: " .. content
-        vim.api.nvim_buf_set_lines(content_buf, last_line - 1, -1, false, { result, "" })
+        local lines = {}
+        for line in result:gmatch("[^\n]+") do
+            table.insert(lines, line)
+        end
+        table.insert(lines, "")
+        vim.api.nvim_buf_set_lines(content_buf, last_line - 1, -1, false, lines)
     end
 end
 
