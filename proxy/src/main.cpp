@@ -1,9 +1,14 @@
 #include "tcp/tcp.h"
+#include <cstdlib>
+#include <iostream>
 #include <thread>
 #include <unistd.h>
+#include "utils/env_loader.h"
 
 
 int main() {
+    loadEnvFile(".env");
+
     const char *ip = "10.0.0.234";
     int port = 22222;
     int serverSocket = createServerSocket(ip, port);
