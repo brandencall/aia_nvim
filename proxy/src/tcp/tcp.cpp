@@ -1,4 +1,5 @@
 #include "tcp.h"
+#include "../models/GeminiTwoFiveFlash.h"
 #include <arpa/inet.h>
 #include <cstdio>
 #include <cstring>
@@ -78,11 +79,18 @@ void process_prompt(int clientSocket, std::string prompt) {
 }
 
 void clientSession(int clientSocket) {
+    models::BaseModel *model = new models::GeminiTwoFiveFlash();
     while (true) {
         std::string prompt = handleClient(clientSocket);
         if (prompt.empty())
             break;
-        process_prompt(clientSocket, prompt);
+        // process_prompt(clientSocket, prompt);
+        std::string response = model->processPrompt(prompt);
+        if (!response.empty()) {
+            sendMsg(clientSocket, response);
+        } else {
+            sendMsg(clientSocket, "Error while processing prompt");
+        }
     }
     close(clientSocket);
 }

@@ -19,7 +19,7 @@ SHARED_OBJECTS = $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS))
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS) | $(BIN_DIR)
-	$(CXX) $(OBJECTS) -o $@
+	$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(@D)
