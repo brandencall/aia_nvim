@@ -4,14 +4,16 @@
 namespace models {
 class BaseModel {
   public:
-    int currentRPM = 0;
-    int currentRPD = 0;
-    long currentTPM = 0;
-    int limitRPM = 0;
-    int limitRPD = 0;
-    long limitTPM = 0;
 
-    virtual ~BaseModel() {}
+    virtual ~BaseModel() = default; 
+
+    virtual std::string getId() const = 0;
+    virtual std::string getUrl() const = 0;
+    virtual std::string getKey() const = 0;
+    virtual int getPriority() const = 0;
+    virtual int getRateLimitPerMinute() const = 0;
+    virtual int getRateLimitPerDay() const = 0;
+
     virtual std::string processPrompt(const std::string &prompt) const = 0;
 };
 } // namespace models

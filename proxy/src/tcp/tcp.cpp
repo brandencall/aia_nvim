@@ -1,5 +1,5 @@
 #include "tcp.h"
-#include "../models/GeminiTwoFiveFlash.h"
+#include "router.h"
 #include <arpa/inet.h>
 #include <cstdio>
 #include <cstring>
@@ -10,7 +10,6 @@
 #include <string>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <thread>
 #include <unistd.h>
 
 int createServerSocket(const char *ip, int port) {
@@ -70,27 +69,12 @@ int acceptClient(int serverSocket) {
     return clientSocket;
 }
 
-void process_prompt(int clientSocket, std::string prompt) {
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    std::string placeholder = "This will be the LLM response!";
-    std::cout << placeholder << std::endl;
-    std::cout << "This is the given prompt: " << prompt << std::endl;
-    sendMsg(clientSocket, placeholder);
-}
-
 void clientSession(int clientSocket) {
-    models::BaseModel *model = new models::GeminiTwoFiveFlash();
     while (true) {
         std::string prompt = handleClient(clientSocket);
         if (prompt.empty())
             break;
-        // process_prompt(clientSocket, prompt);
-        std::string response = model->processPrompt(prompt);
-        if (!response.empty()) {
-            sendMsg(clientSocket, response);
-        } else {
-            sendMsg(clientSocket, "Error while processing prompt");
-        }
+        routeRequest(clientSocket, prompt);
     }
     close(clientSocket);
 }

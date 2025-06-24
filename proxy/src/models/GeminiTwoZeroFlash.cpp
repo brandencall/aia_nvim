@@ -1,4 +1,4 @@
-#include "GeminiTwoFiveFlash.h"
+#include "GeminiTwoZeroFlash.h"
 #include "../utils/api_request.h"
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -6,14 +6,14 @@
 
 namespace models {
 
-std::string GeminiTwoFiveFlash::getId() const { return _id; }
-std::string GeminiTwoFiveFlash::getUrl() const { return _url; }
-std::string GeminiTwoFiveFlash::getKey() const { return _key; }
-int GeminiTwoFiveFlash::getPriority() const { return _priority; }
-int GeminiTwoFiveFlash::getRateLimitPerMinute() const { return _rateLimitPerMinute; }
-int GeminiTwoFiveFlash::getRateLimitPerDay() const { return _rateLimitPerDay; }
+std::string GeminiTwoZeroFlash::getId() const { return _id; }
+std::string GeminiTwoZeroFlash::getUrl() const { return _url; }
+std::string GeminiTwoZeroFlash::getKey() const { return _key; }
+int GeminiTwoZeroFlash::getPriority() const { return _priority; }
+int GeminiTwoZeroFlash::getRateLimitPerMinute() const { return _rateLimitPerMinute; }
+int GeminiTwoZeroFlash::getRateLimitPerDay() const { return _rateLimitPerDay; }
 
-std::string GeminiTwoFiveFlash::processPrompt(const std::string &prompt) const {
+std::string GeminiTwoZeroFlash::processPrompt(const std::string &prompt) const {
     std::string endpoint = _url + _key;
     std::string response = sendRequest(endpoint, prompt);
     if (response.empty()) {
