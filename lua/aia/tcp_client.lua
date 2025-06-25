@@ -44,6 +44,18 @@ M.write_prompt = function(prompt)
     end
 end
 
+M.write_new_project = function(projectName, context)
+    if M.client and M.client:is_active() then
+        local request = {
+            request_type = "new_project",
+            project_id = projectName,
+            content = context
+        }
+        local json_request = vim.fn.json_encode(request)
+        M.client:write(json_request)
+    end
+end
+
 local function close_tcp()
     if M.client and M.client:is_active() then
         M.client:shutdown(function()

@@ -2,6 +2,7 @@
 #include "models/BaseModel.h"
 #include "tcp/tcp.h"
 #include "utils/config_loader.h"
+#include <filesystem>
 #include <memory>
 #include <thread>
 #include <unistd.h>
@@ -10,6 +11,7 @@
 int main() {
     std::vector<std::shared_ptr<models::BaseModel>> models = loadModelsFromConfig("endpoints.json");
     ModelManager::init(models);
+    std::filesystem::create_directories("data");
 
     const char *ip = "10.0.0.234";
     int port = 22222;

@@ -8,7 +8,7 @@
 void Router::routeRequest(std::string prompt) {
     if (_requestsAttempted < _requestsLimit) {
         std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
-        // TODO: need to validate currentModel limits. Need to handle failed responses as well
+        // TODO: need to validate currentModel limits.
         std::pair<long, std::string> response = currentModel->processPrompt(prompt);
         _requestsAttempted++;
         handleResponse(response, prompt);
