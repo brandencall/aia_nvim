@@ -9,8 +9,8 @@ class ModelManager {
     static void init(const std::vector<std::shared_ptr<models::BaseModel>> &models);
     static ModelManager &getInstance();
 
-    std::shared_ptr<models::BaseModel> getNextAvailableModel();
     std::shared_ptr<models::BaseModel> getCurrentAvailableModel();
+    void setNextModel();
 
   private:
     ModelManager(const std::vector<std::shared_ptr<models::BaseModel>> &models);

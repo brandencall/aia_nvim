@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 namespace models {
 class BaseModel {
   public:
@@ -14,6 +15,6 @@ class BaseModel {
     virtual int getRateLimitPerMinute() const = 0;
     virtual int getRateLimitPerDay() const = 0;
 
-    virtual std::string processPrompt(const std::string &prompt) const = 0;
+    virtual std::pair<long, std::string> processPrompt(const std::string &prompt) const = 0;
 };
 } // namespace models

@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra 
-LDFLAGS = -lgtest -lgtest_main -pthread -lcurl
+LDFLAGS = -lgtest -lgtest_main -pthread -lcurl -lsqlite3
 
 SRC_DIR = src
 INCLUDE_DIR = -I/usr/include 

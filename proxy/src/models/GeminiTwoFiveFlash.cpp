@@ -3,6 +3,7 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <utility>
 
 namespace models {
 
@@ -13,28 +14,28 @@ int GeminiTwoFiveFlash::getPriority() const { return _priority; }
 int GeminiTwoFiveFlash::getRateLimitPerMinute() const { return _rateLimitPerMinute; }
 int GeminiTwoFiveFlash::getRateLimitPerDay() const { return _rateLimitPerDay; }
 
-std::string GeminiTwoFiveFlash::processPrompt(const std::string &prompt) const {
+std::pair<long, std::string> GeminiTwoFiveFlash::processPrompt(const std::string &prompt) const {
     std::string endpoint = _url + _key;
-    std::string response = sendRequest(endpoint, prompt);
-    if (response.empty()) {
+    std::pair<long, std::string> response = sendRequest(endpoint, prompt);
+    if (response.second.empty()) {
         std::cout << "response from llm is empty :(" << std::endl;
         return response;
     }
     try {
-        auto response_json = nlohmann::json::parse(response);
+        auto response_json = nlohmann::json::parse(response.second);
         if (response_json.contains("candidates") && !response_json["candidates"].empty()) {
             auto content = response_json["candidates"][0]["content"]["parts"][0]["text"];
             std::cout << "Generated Text: " << content.get<std::string>() << std::endl;
-            return content.get<std::string>();
+            return {response.first, content.get<std::string>()};
         } else {
-            std::cerr << "No candidates found in response: " << response << std::endl;
+            std::cerr << "No candidates found in response: " << response.second << std::endl;
         }
     } catch (const nlohmann::json::exception &e) {
         std::cerr << "JSON parsing error: " << e.what() << std::endl;
-        std::cerr << "Raw response: " << response << std::endl;
-        return "";
+        std::cerr << "Raw response: " << response.second << std::endl;
+        return response;
     }
-    return "";
+    return response;
 }
 
 } // namespace models

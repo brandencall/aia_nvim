@@ -3,13 +3,14 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <utility>
 
 static size_t writeMemoryCallback(void *contents, size_t size, size_t nmemb, std::string *userp) {
     userp->append((char *)contents, size * nmemb);
     return size * nmemb;
 }
 
-std::string sendRequest(const std::string &endpoint, const std::string &prompt) {
+std::pair<long, std::string> sendRequest(const std::string &endpoint, const std::string &prompt) {
     CURL *curl;
     CURLcode result;
 
@@ -18,7 +19,7 @@ std::string sendRequest(const std::string &endpoint, const std::string &prompt) 
     curl = curl_easy_init();
     if (curl == NULL) {
         std::cerr << stderr << " HTTP request failed" << std::endl;
-        return "";
+        return {-1, ""};
     }
     nlohmann::json request_body;
     request_body["contents"] = nlohmann::json::array();
@@ -39,7 +40,7 @@ std::string sendRequest(const std::string &endpoint, const std::string &prompt) 
     result = curl_easy_perform(curl);
     if (result != CURLE_OK) {
         std::cerr << "Error: " << curl_easy_strerror(result) << std::endl;
-        return "";
+        return {-1, ""};
     }
 
     long http_code = 0;
@@ -49,10 +50,11 @@ std::string sendRequest(const std::string &endpoint, const std::string &prompt) 
         std::cerr << "Response: " << response_data << std::endl;
         curl_slist_free_all(headers);
         curl_easy_cleanup(curl);
-        return "";
+        return {http_code, ""};
     }
 
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
-    return response_data;
+    return {http_code, response_data};
+
 }

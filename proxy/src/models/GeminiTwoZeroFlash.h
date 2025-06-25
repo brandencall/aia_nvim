@@ -3,6 +3,7 @@
 #include "BaseModel.h"
 #include <iostream>
 #include <string>
+#include <utility>
 
 namespace models {
 class GeminiTwoZeroFlash : public BaseModel {
@@ -27,6 +28,6 @@ class GeminiTwoZeroFlash : public BaseModel {
     virtual int getRateLimitPerMinute() const override;
     virtual int getRateLimitPerDay() const override;
 
-    std::string processPrompt(const std::string &prompt) const override;
+    std::pair<long, std::string> processPrompt(const std::string &prompt) const override;
 };
 } // namespace models

@@ -70,11 +70,12 @@ int acceptClient(int serverSocket) {
 }
 
 void clientSession(int clientSocket) {
+    Router *router = new Router(clientSocket);
     while (true) {
         std::string prompt = handleClient(clientSocket);
         if (prompt.empty())
             break;
-        routeRequest(clientSocket, prompt);
+        router->routeRequest(prompt);
     }
     close(clientSocket);
 }

@@ -27,6 +27,6 @@ class GeminiTwoFiveFlash : public BaseModel {
     int getRateLimitPerMinute() const override;
     int getRateLimitPerDay() const override;
 
-    std::string processPrompt(const std::string &prompt) const override;
+    std::pair<long, std::string> processPrompt(const std::string &prompt) const override;
 };
 } // namespace models
