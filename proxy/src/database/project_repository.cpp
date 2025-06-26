@@ -2,17 +2,26 @@
 #include "db.h"
 #include "models/project.h"
 #include <iostream>
+#include <sqlite_modern_cpp/errors.h>
 #include <string>
 
 namespace database {
 
-void insertProject(const network::ClientRequest &request) {
+bool insertProject(const network::ClientRequest &request) {
     if (!getProject(request)) {
-        getDB() << "INSERT INTO projects (project_id, context) VALUES (?, ?);" << request.project_id << request.content;
-    } else {
-        std::cout << "this project already exists. Should probably notify the client" << std::endl;
+        try {
+            getDB() << "INSERT INTO projects (project_id, context) VALUES (?, ?);" << request.project_id
+                    << request.content;
+            return true;
+        } catch (const sqlite::sqlite_exception &e) {
+            std::cerr << "SQLite error: " << e.what();
+            return false;
+        }
     }
+    std::cout << "This project already exists." << std::endl;
+    return false;
 }
+
 std::optional<Project> getProject(const network::ClientRequest &request) {
     std::optional<Project> result;
     getDB() << "SELECT id, project_id, context, timestamp FROM projects WHERE project_id = ?;" << request.project_id >>

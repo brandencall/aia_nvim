@@ -7,8 +7,7 @@
 namespace network {
 void Router::routeRequest(const ClientRequest &request) {
     if (request.request_type == "new_project") {
-        std::cout << "This is a new project request. Insert it into the db and then send confirmation to client"
-                  << std::endl;
+        std::cout << "New Project request" << std::endl;
         handleNewProjectRequest(request);
     } else if (request.request_type == "prompt") {
         handlePromptRequest(request);
@@ -16,7 +15,12 @@ void Router::routeRequest(const ClientRequest &request) {
 }
 
 void Router::handleNewProjectRequest(const ClientRequest &request) {
-    database::insertProject(request);
+    bool insertedProject = database::insertProject(request);
+    if (insertedProject) {
+        sendMsg(_clientSocket, "Successfully inserted new Project: " + request.project_id);
+    } else {
+        sendMsg(_clientSocket, "Failed to insert project. Project may already exist.");
+    }
 }
 
 void Router::handlePromptRequest(const ClientRequest &request) {
