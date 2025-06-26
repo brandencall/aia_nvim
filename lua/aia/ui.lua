@@ -47,6 +47,10 @@ M.create_side_win = function()
 end
 
 M.set_content_text = function(content)
+    if content_buf == nil then
+        vim.notify(content)
+        return
+    end
     local last_line = vim.api.nvim_buf_line_count(content_buf)
     if (content == "Processing...") then
         vim.api.nvim_buf_set_lines(content_buf, last_line, -1, false, { content })

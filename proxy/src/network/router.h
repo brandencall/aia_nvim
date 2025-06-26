@@ -1,12 +1,15 @@
 #pragma once
 #include "../ModelManager.h"
+#include "tcp.h"
 #include <string>
 #include <utility>
+
+namespace network {
 
 class Router {
   public:
     Router(int clientSocket) : _clientSocket(clientSocket) {}
-    void routeRequest(std::string prompt);
+    void routeRequest(const ClientRequest &request);
 
   private:
     int _clientSocket;
@@ -14,5 +17,6 @@ class Router {
     int _requestsLimit = 5;
     ModelManager _modelManager = ModelManager::getInstance();
 
-    void handleResponse(std::pair<long, std::string> response, std::string prompt);
+    void handleResponse(std::pair<long, std::string> response, const ClientRequest &request);
 };
+} // namespace network

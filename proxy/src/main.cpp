@@ -1,6 +1,6 @@
 #include "ModelManager.h"
 #include "models/BaseModel.h"
-#include "tcp/tcp.h"
+#include "network/tcp.h"
 #include "utils/config_loader.h"
 #include <filesystem>
 #include <memory>
@@ -15,14 +15,14 @@ int main() {
 
     const char *ip = "10.0.0.234";
     int port = 22222;
-    int serverSocket = createServerSocket(ip, port);
+    int serverSocket = network::createServerSocket(ip, port);
     if (serverSocket == -1)
         return -1;
     while (true) {
-        int clientSocket = acceptClient(serverSocket);
+        int clientSocket = network::acceptClient(serverSocket);
         if (clientSocket == -1)
             break;
-        std::thread(clientSession, clientSocket).detach();
+        std::thread(network::clientSession, clientSocket).detach();
     }
     close(serverSocket);
     return 0;

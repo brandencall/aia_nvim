@@ -1,5 +1,4 @@
 #include "tcp.h"
-#include "router.h"
 #include <arpa/inet.h>
 #include <cstdio>
 #include <cstring>
@@ -7,10 +6,13 @@
 #include <limits.h>
 #include <netinet/in.h>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <string>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>
+
+namespace network {
 
 int createServerSocket(const char *ip, int port) {
     int serverSocket;
@@ -72,32 +74,36 @@ int acceptClient(int serverSocket) {
 void clientSession(int clientSocket) {
     Router *router = new Router(clientSocket);
     while (true) {
-        std::string prompt = handleClient(clientSocket);
-        if (prompt.empty())
+        auto prompt = handleClient(clientSocket);
+        if (!prompt)
             break;
-        router->routeRequest(prompt);
+        router->routeRequest(*prompt);
     }
     close(clientSocket);
 }
 
-std::string handleClient(int clientSocket) {
+std::optional<ClientRequest> handleClient(int clientSocket) {
     char buffer[1024];
     std::memset(buffer, 0, 1024);
     ssize_t bytesReceived = recv(clientSocket, buffer, 1024 - 1, 0);
 
     if (bytesReceived == 0) {
         std::cout << "Client disconnected gracefully" << std::endl;
-        return "";
+        return std::nullopt;
     } else if (bytesReceived < 0) {
         perror("recv failed");
-        return "";
+        return std::nullopt;
     } else {
         std::cout << "Client said: " << std::string(buffer) << std::endl;
         std::string confirmation = "Processing...";
         sendMsg(clientSocket, confirmation);
         std::cout << confirmation << std::endl;
-        return std::string(buffer);
+        json j = json::parse(buffer);
+        ClientRequest request = j.get<ClientRequest>();
+        return request;
     }
 }
 
 void sendMsg(int clientSocket, std::string msg) { send(clientSocket, msg.c_str(), msg.size(), 0); }
+
+} // namespace network
