@@ -1,5 +1,6 @@
 #include "router.h"
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -8,22 +9,29 @@ void Router::routeRequest(const ClientRequest &request) {
     if (request.request_type == "new_project") {
         std::cout << "This is a new project request. Insert it into the db and then send confirmation to client"
                   << std::endl;
+        handleNewProjectRequest(request);
     } else if (request.request_type == "prompt") {
-        if (_requestsAttempted < _requestsLimit) {
-            std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
-            // TODO: need to validate currentModel limits.
-            // TODO: Need to pass the ClientRequest so that it can be project specific 
-            std::pair<long, std::string> response = currentModel->processPrompt(request.content);
-            _requestsAttempted++;
-            handleResponse(response, request);
-        } else {
-            sendMsg(_clientSocket, "Number of requests attempted exceeded the limit. Try again later. This is not "
-                                   "including the bandwith retry's");
-            _requestsAttempted = 0;
-            return;
-        }
+        handlePromptRequest(request);
+    }
+}
+
+void Router::handleNewProjectRequest(const ClientRequest &request) {
+    database::insertProject(request);
+}
+
+void Router::handlePromptRequest(const ClientRequest &request) {
+    if (_requestsAttempted < _requestsLimit) {
+        std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
+        // TODO: need to validate currentModel limits.
+        // TODO: Need to pass the ClientRequest so that it can be project specific
+        std::pair<long, std::string> response = currentModel->processPrompt(request.content);
+        _requestsAttempted++;
+        handleResponse(response, request);
     } else {
-        // This should never happen
+        sendMsg(_clientSocket, "Number of requests attempted exceeded the limit. Try again later. This is not "
+                               "including the bandwith retry's");
+        _requestsAttempted = 0;
+        return;
     }
 }
 
@@ -32,12 +40,12 @@ void Router::handleResponse(std::pair<long, std::string> response, const ClientR
         std::cerr << "The model endpoint doesn't exist" << std::endl;
         // switch to another model
         _modelManager.setNextModel();
-        routeRequest(request);
+        handlePromptRequest(request);
     } else if (response.first == 429) {
         std::cout << "TOO MANY REQUESTS! Switching models" << std::endl;
         // Need to switch models because we are at limit.
         _modelManager.setNextModel();
-        routeRequest(request);
+        handlePromptRequest(request);
     } else if (response.first == 509) {
         std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
         std::cout << "Bandwith exceeded. Retrying same model: " << currentModel->getKey() << std::endl;

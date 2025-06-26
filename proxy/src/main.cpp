@@ -1,4 +1,5 @@
 #include "ModelManager.h"
+#include "database/db.h"
 #include "models/BaseModel.h"
 #include "network/tcp.h"
 #include "utils/config_loader.h"
@@ -12,6 +13,7 @@ int main() {
     std::vector<std::shared_ptr<models::BaseModel>> models = loadModelsFromConfig("endpoints.json");
     ModelManager::init(models);
     std::filesystem::create_directories("data");
+    database::initializeDB();
 
     const char *ip = "10.0.0.234";
     int port = 22222;
