@@ -14,8 +14,9 @@ int GeminiTwoZeroFlash::getPriority() const { return _priority; }
 int GeminiTwoZeroFlash::getRateLimitPerMinute() const { return _rateLimitPerMinute; }
 int GeminiTwoZeroFlash::getRateLimitPerDay() const { return _rateLimitPerDay; }
 
-std::pair<long, std::string> GeminiTwoZeroFlash::processPrompt(const std::string &prompt) const {
+std::pair<long, std::string> GeminiTwoZeroFlash::processPrompt(const network::ClientRequest& request) const {
     std::string endpoint = _url + _key;
+    std::string prompt = processClientRequest(request);
     std::pair<long, std::string> response = sendRequest(endpoint, prompt);
     if (response.second.empty()) {
         std::cout << "response from llm is empty :(" << std::endl;

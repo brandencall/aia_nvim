@@ -28,7 +28,7 @@ void Router::handlePromptRequest(const ClientRequest &request) {
         std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
         // TODO: need to validate currentModel limits.
         // TODO: Need to pass the ClientRequest so that it can be project specific
-        std::pair<long, std::string> response = currentModel->processPrompt(request.content);
+        std::pair<long, std::string> response = currentModel->processPrompt(request);
         _requestsAttempted++;
         handleResponse(response, request);
     } else {
@@ -54,7 +54,7 @@ void Router::handleResponse(std::pair<long, std::string> response, const ClientR
         std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
         std::cout << "Bandwith exceeded. Retrying same model: " << currentModel->getKey() << std::endl;
         for (int i = 0; i < 3; i++) {
-            response = currentModel->processPrompt(request.content);
+            response = currentModel->processPrompt(request);
             if (response.first == 509) {
                 std::cout << "Retrying failed again for model: " << currentModel->getKey() << std::endl;
             } else if (response.second.empty()) {
