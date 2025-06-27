@@ -6,7 +6,7 @@
 namespace network {
 int createServerSocket(const char *ip, int port);
 int acceptClient(int serverSocket);
-void clientSession(int clientSocket);
+void clientSession(int clientSocket, ModelManager* modelManager);
 std::optional<ClientRequest> handleClient(int clientSocket);
 void sendMsg(int clientSocket, std::string msg);
 } // namespace network

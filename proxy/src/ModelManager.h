@@ -6,15 +6,20 @@
 
 class ModelManager {
   public:
-    static void init(const std::vector<std::shared_ptr<models::BaseModel>> &models);
-    static ModelManager &getInstance();
+    ModelManager(const std::vector<std::shared_ptr<models::BaseModel>> &models) : _models(models) {
+        _activeModel = models[0];
+        for (const auto &model : models) {
+            if (model->getPriority() == 1) {
+                _activeModel = model;
+                break;
+            }
+        }
+    }
 
     std::shared_ptr<models::BaseModel> getCurrentAvailableModel();
     void setNextModel();
 
   private:
-    ModelManager(const std::vector<std::shared_ptr<models::BaseModel>> &models);
     std::vector<std::shared_ptr<models::BaseModel>> _models;
-    static bool _initialized;
     std::shared_ptr<models::BaseModel> _activeModel;
 };
