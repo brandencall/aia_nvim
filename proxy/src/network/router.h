@@ -19,7 +19,11 @@ class Router {
     int _requestsLimit = 5;
 
     void handleResponse(std::pair<long, std::string> response, const ClientRequest &request);
+    void handle404Response(const ClientRequest &request);
+    void handle429Response(const ClientRequest &request);
+    void handle509Response(const ClientRequest &request);
     void handleNewProjectRequest(const ClientRequest &request);
     void handlePromptRequest(const ClientRequest &request);
+    void handleSuccessfulResponse(std::pair<long, std::string> response);
 };
 } // namespace network

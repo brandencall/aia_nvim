@@ -27,7 +27,6 @@ void Router::handlePromptRequest(const ClientRequest &request) {
     if (_requestsAttempted < _requestsLimit) {
         std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
         // TODO: need to validate currentModel limits.
-        // TODO: Need to pass the ClientRequest so that it can be project specific
         std::pair<long, std::string> response = currentModel->processPrompt(request);
         _requestsAttempted++;
         handleResponse(response, request);
@@ -40,37 +39,56 @@ void Router::handlePromptRequest(const ClientRequest &request) {
 }
 
 void Router::handleResponse(std::pair<long, std::string> response, const ClientRequest &request) {
-    if (response.first == 404) {
-        std::cerr << "The model endpoint doesn't exist" << std::endl;
-        // switch to another model
-        _modelManager.setNextModel();
-        handlePromptRequest(request);
+    if (response.first == 200) {
+        handleSuccessfulResponse(response);
+    } else if (response.first == 404) {
+        handle404Response(request);
     } else if (response.first == 429) {
-        std::cout << "TOO MANY REQUESTS! Switching models" << std::endl;
-        // Need to switch models because we are at limit.
-        _modelManager.setNextModel();
-        handlePromptRequest(request);
+        handle429Response(request);
     } else if (response.first == 509) {
-        std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
-        std::cout << "Bandwith exceeded. Retrying same model: " << currentModel->getKey() << std::endl;
-        for (int i = 0; i < 3; i++) {
-            response = currentModel->processPrompt(request);
-            if (response.first == 509) {
-                std::cout << "Retrying failed again for model: " << currentModel->getKey() << std::endl;
-            } else if (response.second.empty()) {
-                std::cout << "The response is empty for some reason" << std::endl;
-                sendMsg(_clientSocket, "Error while processing prompt");
-                break;
-            } else {
-                sendMsg(_clientSocket, response.second);
-                break;
-            }
-        }
+        handle509Response(request);
     } else if (response.second.empty()) {
         std::cout << "The response is empty for some reason" << std::endl;
-        sendMsg(_clientSocket, "Error while processing prompt");
+        sendMsg(_clientSocket, "ERROR: The response is empty for some reason");
     } else {
-        sendMsg(_clientSocket, response.second);
+        std::cout << "There was an error with the response: " << response.first << std::endl;
+        sendMsg(_clientSocket, "There was an error with the response: " + std::to_string(response.first));
+    }
+}
+
+void Router::handleSuccessfulResponse(std::pair<long, std::string> response) {
+    sendMsg(_clientSocket, response.second);
+    _requestsAttempted = 0;
+}
+
+void Router::handle404Response(const ClientRequest &request) {
+    std::cerr << "The model endpoint doesn't exist" << std::endl;
+    _modelManager.setNextModel();
+    handlePromptRequest(request);
+}
+
+void Router::handle429Response(const ClientRequest &request) {
+    std::cout << "TOO MANY REQUESTS! Switching models" << std::endl;
+    _modelManager.setNextModel();
+    handlePromptRequest(request);
+}
+
+void Router::handle509Response(const ClientRequest &request) {
+    std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
+    std::cout << "Bandwith exceeded. Retrying same model: " << currentModel->getKey() << std::endl;
+    for (int i = 0; i < 3; i++) {
+        auto response = currentModel->processPrompt(request);
+        if (response.first == 509) {
+            std::cout << "Retrying failed again for model: " << currentModel->getKey() << std::endl;
+        } else if (response.second.empty()) {
+            std::cout << "The response is empty for some reason" << std::endl;
+            sendMsg(_clientSocket, "Error while processing prompt");
+            break;
+        } else {
+            sendMsg(_clientSocket, response.second);
+            handleSuccessfulResponse(response);
+            break;
+        }
     }
 }
 
