@@ -62,7 +62,6 @@ void Router::handleSuccessfulResponse(std::pair<long, std::string> response) {
 }
 
 void Router::handle404Response(const ClientRequest &request) {
-    std::cerr << "The model endpoint doesn't exist" << std::endl;
     _modelManager.setNextModel();
     handlePromptRequest(request);
 }

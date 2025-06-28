@@ -4,12 +4,13 @@
 
 namespace database {
 
-static sqlite::database db("data/aia.db");
-
-sqlite::database &getDB() { return db; }
+sqlite::database &getDB() {
+    static sqlite::database db("data/aia.db");
+    return db;
+}
 
 void initializeDB() {
-    db << "CREATE TABLE IF NOT EXISTS projects ("
+    getDB() << "CREATE TABLE IF NOT EXISTS projects ("
           "id INTEGER PRIMARY KEY AUTOINCREMENT, "
           "project_id TEXT, "
           "context TEXT, "

@@ -6,20 +6,19 @@
 
 class ModelManager {
   public:
-    ModelManager(const std::vector<std::shared_ptr<models::BaseModel>> &models) : _models(models) {
-        _activeModel = models[0];
+    std::vector<std::shared_ptr<models::BaseModel>> models;
+    std::shared_ptr<models::BaseModel> activeModel;
+
+    ModelManager(const std::vector<std::shared_ptr<models::BaseModel>> &models)
+        : models(models), activeModel(models[0]) {
         for (const auto &model : models) {
             if (model->getPriority() == 1) {
-                _activeModel = model;
+                activeModel = model;
                 break;
             }
         }
     }
-
-    std::shared_ptr<models::BaseModel> getCurrentAvailableModel();
-    void setNextModel();
-
-  private:
-    std::vector<std::shared_ptr<models::BaseModel>> _models;
-    std::shared_ptr<models::BaseModel> _activeModel;
+    virtual ~ModelManager() = default;
+    virtual std::shared_ptr<models::BaseModel> getCurrentAvailableModel();
+    virtual void setNextModel();
 };

@@ -6,7 +6,20 @@
 
 namespace models {
 class BaseModel {
+  protected:
+    std::string _id;
+    std::string _url;
+    std::string _key;
+    int _priority;
+    int _rateLimitPerMinute;
+    int _rateLimitPerDay;
+
   public:
+    BaseModel(std::string id, std::string url, std::string key, int priority, int rateLimitPerMinute,
+              int rateLimitPerDay)
+        : _id(id), _url(url), _key(key), _priority(priority), _rateLimitPerMinute(rateLimitPerMinute),
+          _rateLimitPerDay(rateLimitPerDay) {}
+
     virtual ~BaseModel() = default;
 
     virtual std::string getId() const = 0;
