@@ -1,5 +1,4 @@
-
-#include "../src/ModelManager.h"
+#include "../../src/ModelManager.h"
 #include "MockBaseModel.h"
 #include <iostream>
 #include <memory>
@@ -14,13 +13,14 @@ public:
   int modelSwitches = 0;
 
   std::shared_ptr<models::BaseModel> getCurrentAvailableModel() {
-    std::cout << "activeModel: " << activeModel->getId();
-    return activeModel;
+    return *modelItorator;
   }
 
   void setNextModel() {
     modelSwitches++;
-    currentIndex = (currentIndex + 1) % models.size();
-    activeModel = models[currentIndex];
+    ++modelItorator;
+    if (modelItorator == models.end()) {
+      modelItorator = models.begin();
+    }
   }
 };

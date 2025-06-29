@@ -7,18 +7,13 @@
 class ModelManager {
   public:
     std::vector<std::shared_ptr<models::BaseModel>> models;
-    std::shared_ptr<models::BaseModel> activeModel;
+    std::vector<std::shared_ptr<models::BaseModel>>::iterator modelItorator;
 
-    ModelManager(const std::vector<std::shared_ptr<models::BaseModel>> &models)
-        : models(models), activeModel(models[0]) {
-        for (const auto &model : models) {
-            if (model->getPriority() == 1) {
-                activeModel = model;
-                break;
-            }
-        }
-    }
+    ModelManager(std::vector<std::shared_ptr<models::BaseModel>> models);
     virtual ~ModelManager() = default;
+
     virtual std::shared_ptr<models::BaseModel> getCurrentAvailableModel();
     virtual void setNextModel();
+
+  private:
 };

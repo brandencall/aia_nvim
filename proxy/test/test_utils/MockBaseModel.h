@@ -1,4 +1,4 @@
-#include "../src/models/BaseModel.h"
+#include "../../src/models/BaseModel.h"
 #include "gmock/gmock.h"
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

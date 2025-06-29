@@ -75,20 +75,18 @@ void Router::handle429Response(const ClientRequest &request) {
 void Router::handle509Response(const ClientRequest &request) {
     std::shared_ptr<models::BaseModel> currentModel = _modelManager.getCurrentAvailableModel();
     std::cout << "Bandwith exceeded. Retrying same model: " << currentModel->getKey() << std::endl;
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
         auto response = currentModel->processPrompt(request);
-        if (response.first == 509) {
+        if (response.first != 200) {
             std::cout << "Retrying failed again for model: " << currentModel->getKey() << std::endl;
-        } else if (response.second.empty()) {
-            std::cout << "The response is empty for some reason" << std::endl;
-            sendMsg(_clientSocket, "Error while processing prompt");
-            break;
         } else {
             sendMsg(_clientSocket, response.second);
             handleSuccessfulResponse(response);
             break;
         }
     }
+    _modelManager.setNextModel();
+    handlePromptRequest(request);
 }
 
 } // namespace network

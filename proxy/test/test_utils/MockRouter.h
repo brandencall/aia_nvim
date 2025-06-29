@@ -1,4 +1,4 @@
-#include "../src/network/router.h"
+#include "../../src/network/router.h"
 #include "MockModelManager.h"
 
 class MockRouter : public network::Router {
