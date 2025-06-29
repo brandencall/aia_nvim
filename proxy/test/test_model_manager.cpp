@@ -37,4 +37,5 @@ TEST(ModelManagerTest, SetNextModel) {
   manager.setNextModel();
   ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model3");
   manager.setNextModel();
+  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model1");
 }
