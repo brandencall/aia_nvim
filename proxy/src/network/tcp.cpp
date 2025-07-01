@@ -71,7 +71,7 @@ int acceptClient(int serverSocket) {
     return clientSocket;
 }
 
-void clientSession(int clientSocket, ModelManager* modelManager) {
+void clientSession(int clientSocket, ModelManager *modelManager) {
     Router *router = new Router(clientSocket, *modelManager);
     while (true) {
         auto prompt = handleClient(clientSocket);
@@ -84,25 +84,52 @@ void clientSession(int clientSocket, ModelManager* modelManager) {
 }
 
 std::optional<ClientRequest> handleClient(int clientSocket) {
-    char buffer[1024];
-    std::memset(buffer, 0, 1024);
-    ssize_t bytesReceived = recv(clientSocket, buffer, 1024 - 1, 0);
+    uint32_t len_network = 0;
+    ssize_t headerBytes = recv(clientSocket, &len_network, sizeof(len_network), MSG_WAITALL);
+    if (headerBytes == 0) {
+        std::cout << "Client disconnected gracefully\n";
+        return std::nullopt;
+    } else if (headerBytes < 0) {
+        perror("recv failed (header)");
+        return std::nullopt;
+    }
 
-    if (bytesReceived == 0) {
-        std::cout << "Client disconnected gracefully" << std::endl;
-        return std::nullopt;
-    } else if (bytesReceived < 0) {
-        perror("recv failed");
-        return std::nullopt;
-    } else {
-        std::cout << "Client said: " << std::string(buffer) << std::endl;
-        std::string confirmation = "Processing...";
-        sendMsg(clientSocket, confirmation);
-        std::cout << confirmation << std::endl;
-        json j = json::parse(buffer);
+    uint32_t messageLength = ntohl(len_network);
+
+    std::string message;
+    message.resize(messageLength);
+
+    size_t totalReceived = 0;
+    while (totalReceived < messageLength) {
+        ssize_t bytes = recv(clientSocket, &message[totalReceived], messageLength - totalReceived, 0);
+        if (bytes <= 0) {
+            perror("recv failed (payload)");
+            return std::nullopt;
+        }
+        totalReceived += bytes;
+    }
+
+    std::cout << "Client sent: " << message << std::endl;
+
+    std::string confirmation = "Processing...";
+    sendMsg(clientSocket, confirmation);
+    std::cout << confirmation << std::endl;
+
+    try {
+        std::string cleanMessage = message;
+        json j = json::parse(cleanMessage);
         ClientRequest request = j.get<ClientRequest>();
         return request;
+    } catch (const std::exception &e) {
+        std::cerr << "JSON parse error: " << e.what() << "\n";
+        return std::nullopt;
     }
+}
+
+std::string removeNuls(const std::string &input) {
+    std::string clean = input;
+    clean.erase(std::remove(clean.begin(), clean.end(), '\0'), clean.end());
+    return clean;
 }
 
 void sendMsg(int clientSocket, std::string msg) { send(clientSocket, msg.c_str(), msg.size(), 0); }

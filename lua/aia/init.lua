@@ -12,7 +12,8 @@ M.setup_aia = function()
         callback = function(event)
             local prompt = event.data.input
             local harpoon = context.get_harpoon_context()
-            local request = { prompt = prompt, harpoon_files = harpoon }
+            local git_diff = context.get_git_diff()
+            local request = { prompt = prompt, harpoon_files = harpoon, git_diff = git_diff }
             tcp.write_prompt(request)
         end,
     })

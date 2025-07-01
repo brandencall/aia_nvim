@@ -14,8 +14,20 @@ local function get_harpoon_function_signatures()
 end
 
 M.get_git_diff = function()
-    local git_diff = vim.fn.system("git diff")
-    vim.notify(git_diff)
+    local max_chars = 4000
+    local context_lines = 1
+    local cmd = "git diff -U" .. tostring(context_lines)
+    local git_diff = vim.fn.system(cmd)
+
+    if vim.v.shell_error ~= 0 then
+        return ""
+    end
+
+    if #git_diff > max_chars then
+        git_diff = string.sub(git_diff, 1, max_chars) .. "\n... [git diff truncated]"
+    end
+
+    return git_diff
 end
 
 M.get_harpoon_context = function()

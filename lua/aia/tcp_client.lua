@@ -1,5 +1,7 @@
 local M = {}
 
+local bit = require("bit")
+
 M.client = nil
 
 M.connect_tcp = function()
@@ -38,6 +40,23 @@ M.connect_tcp = function()
     end)
 end
 
+
+
+local function pack_u32_be(n)
+  return string.char(
+    bit.band(bit.rshift(n, 24), 0xFF),
+    bit.band(bit.rshift(n, 16), 0xFF),
+    bit.band(bit.rshift(n, 8), 0xFF),
+    bit.band(n, 0xFF)
+  )
+end
+
+local function send_tcp(json)
+    local len = #json
+    local prefix = pack_u32_be(len)
+    M.client:write(prefix .. json)
+end
+
 M.write_prompt = function(content)
     if M.client and M.client:is_active() then
         local project_id = vim.fs.root(0, ".git")
@@ -50,7 +69,7 @@ M.write_prompt = function(content)
             content = content
         }
         local json_request = vim.fn.json_encode(request)
-        M.client:write(json_request)
+        send_tcp(json_request)
     end
 end
 
@@ -59,12 +78,13 @@ M.write_new_project = function(projectName, context)
         local request = {
             request_type = "new_project",
             project_id = projectName,
-            content = { prompt = context, harpoon_files = ""}
+            content = { prompt = context, harpoon_files = "", git_diff = "" }
         }
         local json_request = vim.fn.json_encode(request)
-        M.client:write(json_request)
+        send_tcp(json_request)
     end
 end
+
 
 local function close_tcp()
     if M.client and M.client:is_active() then

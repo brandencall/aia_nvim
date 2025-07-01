@@ -24,6 +24,7 @@ std::string BaseModel::processClientContent(const network::Content &content) con
         }
         result += "}\n";
     }
+    result += "Below is the git diff:\n" + content.gitDiff;
     return result + content.prompt;
 }
 

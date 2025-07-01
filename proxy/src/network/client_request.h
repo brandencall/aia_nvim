@@ -13,6 +13,7 @@ struct HarpoonFile{
 struct Content {
     std::string prompt;
     std::vector<HarpoonFile> harpoonFiles;
+    std::string gitDiff;
 };
 
 struct ClientRequest {
