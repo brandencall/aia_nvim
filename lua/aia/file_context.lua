@@ -2,21 +2,30 @@ local M = {}
 
 local harpoon = require("harpoon")
 
-M.get_harpoon_files = function()
+M.get_harpoon_context = function()
+    local harpoon_signatures = M.get_harpoon_function_signatures()
+    local result = {}
+    for key, value in pairs(harpoon_signatures) do
+        table.insert(result, { file = key, functions = value })
+    end
+    return result
+end
+
+M.get_harpoon_function_signatures = function()
     local list = harpoon:list()
-    for i, item in ipairs(list.items) do
-        vim.notify(string.format("Harpoon %d: %s", i, item.value))
+    local result = {}
+    for _, item in ipairs(list.items) do
         local bufnr = vim.fn.bufadd(item.value)
         local signatures = M.get_function_signatures(bufnr)
-        P(signatures)
+        result[item.value] = signatures
     end
+    return result
 end
 
 M.get_function_signatures = function(bufnr)
     vim.fn.bufload(bufnr)
     local filetype = vim.api.nvim_buf_get_option(bufnr, "filetype")
 
-    -- Map filetypes to Tree-sitter parsers
     local filetype_to_parser = {
         cpp = "cpp",
         cs = "c_sharp",
@@ -28,21 +37,18 @@ M.get_function_signatures = function(bufnr)
         return {}
     end
 
-    -- Get the Tree-sitter parser for the buffer
     local ok, parser = pcall(require('nvim-treesitter.parsers').get_parser, bufnr, parser_name)
     if not ok or not parser then
         vim.notify("Tree-sitter: Parser not found for " .. parser_name, vim.log.levels.WARN)
         return {}
     end
 
-    -- Parse the buffer
     local tree = parser:parse()[1]
     if not tree then
         vim.notify("Tree-sitter: Failed to parse buffer", vim.log.levels.WARN)
         return {}
     end
 
-    -- Load the query
     local query_name = "functions"
     local ok, query = pcall(vim.treesitter.query.get, parser_name, query_name)
     if not ok or not query then
@@ -89,6 +95,6 @@ M.get_function_signatures = function(bufnr)
 end
 
 vim.api.nvim_create_user_command("TreesitterTest", M.get_function_signatures, { desc = "test" })
-vim.api.nvim_create_user_command("ListFiles", M.get_harpoon_files, { desc = "test" })
+vim.api.nvim_create_user_command("ListFiles", M.get_harpoon_context, { desc = "test" })
 
 return M

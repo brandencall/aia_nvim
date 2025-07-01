@@ -38,7 +38,7 @@ M.connect_tcp = function()
     end)
 end
 
-M.write_prompt = function(prompt)
+M.write_prompt = function(content)
     if M.client and M.client:is_active() then
         local project_id = vim.fs.root(0, ".git")
         if project_id == nil then
@@ -47,7 +47,7 @@ M.write_prompt = function(prompt)
         local request = {
             request_type = "prompt",
             project_id = project_id,
-            content = prompt
+            content = content
         }
         local json_request = vim.fn.json_encode(request)
         M.client:write(json_request)
@@ -59,7 +59,7 @@ M.write_new_project = function(projectName, context)
         local request = {
             request_type = "new_project",
             project_id = projectName,
-            content = context
+            content = { prompt = context, harpoon_files = ""}
         }
         local json_request = vim.fn.json_encode(request)
         M.client:write(json_request)

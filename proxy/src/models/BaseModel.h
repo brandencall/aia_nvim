@@ -14,6 +14,8 @@ class BaseModel {
     int _rateLimitPerMinute;
     int _rateLimitPerDay;
 
+    std::string processClientContent(const network::Content &content) const;
+
   public:
     BaseModel(std::string id, std::string url, std::string key, int priority, int rateLimitPerMinute,
               int rateLimitPerDay)

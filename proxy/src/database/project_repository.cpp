@@ -11,7 +11,7 @@ bool insertProject(const network::ClientRequest &request) {
     if (!getProject(request)) {
         try {
             getDB() << "INSERT INTO projects (project_id, context) VALUES (?, ?);" << request.project_id
-                    << request.content;
+                    << request.content.prompt;
             return true;
         } catch (const sqlite::sqlite_exception &e) {
             std::cerr << "SQLite error: " << e.what();

@@ -17,12 +17,14 @@ TEST(RouterTest, Route200Request) {
   MockModelManager manager(models);
 
   MockRouter router(1, manager);
-  network::ClientRequest request{"prompt", "", ""};
+  network::HarpoonFile harpoonFile{"", {""}};
+  network::Content content{"", {harpoonFile}};
+  network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
 
-  ASSERT_EQ(manager.modelSwitches, 0); 
-  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model1"); 
+  ASSERT_EQ(manager.modelSwitches, 0);
+  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model1");
 }
 
 TEST(RouterTest, SwitchModelOn404) {
@@ -40,12 +42,14 @@ TEST(RouterTest, SwitchModelOn404) {
   MockModelManager manager(models);
 
   MockRouter router(1, manager);
-  network::ClientRequest request{"prompt", "", ""};
+  network::HarpoonFile harpoonFile{"", {""}};
+  network::Content content{"", {harpoonFile}};
+  network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
 
-  ASSERT_EQ(manager.modelSwitches, 1); 
-  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model2"); 
+  ASSERT_EQ(manager.modelSwitches, 1);
+  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model2");
 }
 
 TEST(RouterTest, SwitchModelOn429) {
@@ -63,17 +67,20 @@ TEST(RouterTest, SwitchModelOn429) {
   MockModelManager manager(models);
 
   MockRouter router(1, manager);
-  network::ClientRequest request{"prompt", "", ""};
+  network::HarpoonFile harpoonFile{"", {""}};
+  network::Content content{"", {harpoonFile}};
+  network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
 
-  ASSERT_EQ(manager.modelSwitches, 1); 
-  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model2"); 
+  ASSERT_EQ(manager.modelSwitches, 1);
+  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model2");
 }
 
 TEST(RouterTest, SwitchModelOn509) {
   auto model1 = std::make_shared<MockBaseModel>("model1", "", "1", 1, 100, 100);
-  EXPECT_CALL(*model1, processPrompt(::testing::_)).Times(3)
+  EXPECT_CALL(*model1, processPrompt(::testing::_))
+      .Times(3)
       .WillRepeatedly(::testing::Return(std::make_pair(509, "")));
 
   auto model2 = std::make_shared<MockBaseModel>("model2", "", "2", 1, 100, 100);
@@ -86,10 +93,12 @@ TEST(RouterTest, SwitchModelOn509) {
   MockModelManager manager(models);
 
   MockRouter router(1, manager);
-  network::ClientRequest request{"prompt", "", ""};
+  network::HarpoonFile harpoonFile{"", {""}};
+  network::Content content{"", {harpoonFile}};
+  network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
 
-  ASSERT_EQ(manager.modelSwitches, 1); 
-  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model2"); 
+  ASSERT_EQ(manager.modelSwitches, 1);
+  ASSERT_EQ(manager.getCurrentAvailableModel()->getId(), "model2");
 }

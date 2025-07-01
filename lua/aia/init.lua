@@ -2,8 +2,8 @@ local M = {}
 
 local ui = require("aia.ui");
 local tcp = require("aia.tcp_client");
-local _= require("aia.project_manager");
-local _= require("aia.file_context");
+local _ = require("aia.project_manager");
+local file_context = require("aia.file_context");
 
 
 M.setup_aia = function()
@@ -11,7 +11,9 @@ M.setup_aia = function()
         pattern = "OnPromptSubmit",
         callback = function(event)
             local prompt = event.data.input
-            tcp.write_prompt(prompt)
+            local harpoon = file_context.get_harpoon_context()
+            local request = { prompt = prompt, harpoon_files = harpoon }
+            tcp.write_prompt(request)
         end,
     })
     vim.api.nvim_create_autocmd("User", {

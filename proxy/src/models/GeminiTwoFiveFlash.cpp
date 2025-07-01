@@ -14,7 +14,7 @@ int GeminiTwoFiveFlash::getPriority() const { return _priority; }
 int GeminiTwoFiveFlash::getRateLimitPerMinute() const { return _rateLimitPerMinute; }
 int GeminiTwoFiveFlash::getRateLimitPerDay() const { return _rateLimitPerDay; }
 
-std::pair<long, std::string> GeminiTwoFiveFlash::processPrompt(const network::ClientRequest& request) const {
+std::pair<long, std::string> GeminiTwoFiveFlash::processPrompt(const network::ClientRequest &request) const {
     std::string endpoint = _url + _key;
     std::string prompt = processClientRequest(request);
     std::pair<long, std::string> response = sendRequest(endpoint, prompt);
