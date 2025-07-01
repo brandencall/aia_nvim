@@ -2,16 +2,7 @@ local M = {}
 
 local harpoon = require("harpoon")
 
-M.get_harpoon_context = function()
-    local harpoon_signatures = M.get_harpoon_function_signatures()
-    local result = {}
-    for key, value in pairs(harpoon_signatures) do
-        table.insert(result, { file = key, functions = value })
-    end
-    return result
-end
-
-M.get_harpoon_function_signatures = function()
+local function get_harpoon_function_signatures()
     local list = harpoon:list()
     local result = {}
     for _, item in ipairs(list.items) do
@@ -21,6 +12,21 @@ M.get_harpoon_function_signatures = function()
     end
     return result
 end
+
+M.get_git_diff = function()
+    local git_diff = vim.fn.system("git diff")
+    vim.notify(git_diff)
+end
+
+M.get_harpoon_context = function()
+    local harpoon_signatures = get_harpoon_function_signatures()
+    local result = {}
+    for key, value in pairs(harpoon_signatures) do
+        table.insert(result, { file = key, functions = value })
+    end
+    return result
+end
+
 
 M.get_function_signatures = function(bufnr)
     vim.fn.bufload(bufnr)
@@ -94,7 +100,7 @@ M.get_function_signatures = function(bufnr)
     return result
 end
 
-vim.api.nvim_create_user_command("TreesitterTest", M.get_function_signatures, { desc = "test" })
+vim.api.nvim_create_user_command("TestGit", M.get_git_diff, { desc = "test" })
 vim.api.nvim_create_user_command("ListFiles", M.get_harpoon_context, { desc = "test" })
 
 return M
