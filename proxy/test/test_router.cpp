@@ -18,7 +18,7 @@ TEST(RouterTest, Route200Request) {
 
   MockRouter router(1, manager);
   network::HarpoonFile harpoonFile{"", {""}};
-  network::Content content{"", {harpoonFile}};
+  network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
@@ -43,7 +43,7 @@ TEST(RouterTest, SwitchModelOn404) {
 
   MockRouter router(1, manager);
   network::HarpoonFile harpoonFile{"", {""}};
-  network::Content content{"", {harpoonFile}};
+  network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
@@ -68,7 +68,7 @@ TEST(RouterTest, SwitchModelOn429) {
 
   MockRouter router(1, manager);
   network::HarpoonFile harpoonFile{"", {""}};
-  network::Content content{"", {harpoonFile}};
+  network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);
@@ -94,7 +94,7 @@ TEST(RouterTest, SwitchModelOn509) {
 
   MockRouter router(1, manager);
   network::HarpoonFile harpoonFile{"", {""}};
-  network::Content content{"", {harpoonFile}};
+  network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};
 
   router.handlePromptRequest(request);

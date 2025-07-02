@@ -11,6 +11,7 @@ void from_json(const json &j, Content &content){
     j.at("prompt").get_to(content.prompt);
     j.at("harpoon_files").get_to(content.harpoonFiles);
     j.at("git_diff").get_to(content.gitDiff);
+    j.at("file_structure").get_to(content.fileStructure);
 }
 
 void from_json(const json &j, ClientRequest &request) {

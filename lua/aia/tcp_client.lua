@@ -1,6 +1,7 @@
 local M = {}
 
 local bit = require("bit")
+local context = require("aia.context")
 
 M.client = nil
 
@@ -43,12 +44,12 @@ end
 
 
 local function pack_u32_be(n)
-  return string.char(
-    bit.band(bit.rshift(n, 24), 0xFF),
-    bit.band(bit.rshift(n, 16), 0xFF),
-    bit.band(bit.rshift(n, 8), 0xFF),
-    bit.band(n, 0xFF)
-  )
+    return string.char(
+        bit.band(bit.rshift(n, 24), 0xFF),
+        bit.band(bit.rshift(n, 16), 0xFF),
+        bit.band(bit.rshift(n, 8), 0xFF),
+        bit.band(n, 0xFF)
+    )
 end
 
 local function send_tcp(json)
@@ -63,6 +64,8 @@ M.write_prompt = function(content)
         if project_id == nil then
             project_id = ""
         end
+        local file_structure = context.get_project_tree(project_id)
+        content.file_structure = file_structure
         local request = {
             request_type = "prompt",
             project_id = project_id,
@@ -73,14 +76,14 @@ M.write_prompt = function(content)
     end
 end
 
-M.write_new_project = function(projectName, context)
+M.write_new_project = function(projectName, content)
     if M.client and M.client:is_active() then
         local request = {
             request_type = "new_project",
             project_id = projectName,
-            content = { prompt = context, harpoon_files = "", git_diff = "" }
+            content = { prompt = content, harpoon_files = "", git_diff = "" }
         }
-        local json_request = vim.fn.json_encode(request)
+        local json_request = vim.json.encode(request)
         send_tcp(json_request)
     end
 end

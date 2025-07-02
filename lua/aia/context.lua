@@ -112,7 +112,19 @@ M.get_function_signatures = function(bufnr)
     return result
 end
 
-vim.api.nvim_create_user_command("TestGit", M.get_git_diff, { desc = "test" })
+M.get_project_tree = function(project_dir)
+    project_dir = project_dir or vim.fs.root(0, ".git")
+    if project_dir == nil then
+        return ""
+    end
+    local handle = io.popen("LANG=C.UTF-8 tree -I '.git|node_modules|target|venv|__pycache__|bin' -L 3 -F --noreport " .. vim.fn.shellescape(project_dir))
+    if not handle then return "" end
+    local result = handle:read("*a")
+    handle:close()
+    return result
+end
+
+vim.api.nvim_create_user_command("TestTree", M.get_project_tree, { desc = "test" })
 vim.api.nvim_create_user_command("ListFiles", M.get_harpoon_context, { desc = "test" })
 
 return M

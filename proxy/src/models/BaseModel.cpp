@@ -12,6 +12,7 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
     std::string projectContext = project->context;
     std::string prompt = processClientContent(request.content);
     std::cout << prompt << std::endl;
+    prompt += "Prompt: " + prompt;
     return prompt;
 }
 
@@ -25,6 +26,7 @@ std::string BaseModel::processClientContent(const network::Content &content) con
         result += "}\n";
     }
     result += "Below is the git diff:\n" + content.gitDiff;
+    result += "Below is the file structure: \n" + content.fileStructure;
     return result + content.prompt;
 }
 

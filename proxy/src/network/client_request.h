@@ -14,6 +14,7 @@ struct Content {
     std::string prompt;
     std::vector<HarpoonFile> harpoonFiles;
     std::string gitDiff;
+    std::string fileStructure;
 };
 
 struct ClientRequest {
