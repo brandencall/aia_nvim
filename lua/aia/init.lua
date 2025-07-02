@@ -11,10 +11,7 @@ M.setup_aia = function()
         pattern = "OnPromptSubmit",
         callback = function(event)
             local prompt = event.data.input
-            local harpoon = context.get_harpoon_context()
-            local git_diff = context.get_git_diff()
-            local request = { prompt = prompt, harpoon_files = harpoon, git_diff = git_diff }
-            tcp.write_prompt(request)
+            tcp.write_prompt(context.get_project_context(prompt))
         end,
     })
     vim.api.nvim_create_autocmd("User", {

@@ -13,6 +13,25 @@ local function get_harpoon_function_signatures()
     return result
 end
 
+M.get_project_context = function(prompt)
+    local project_id = vim.fs.root(0, ".git")
+    if project_id == nil then
+        project_id = ""
+    end
+    local harpoon_context = M.get_harpoon_context()
+    local git_diff = M.get_git_diff()
+    local file_structure = M.get_project_tree(project_id)
+    local request = {
+        prompt = prompt,
+        project_id = project_id,
+        harpoon_files = harpoon_context,
+        git_diff = git_diff,
+        file_structure =
+            file_structure
+    }
+    return request
+end
+
 M.get_git_diff = function()
     local max_chars = 4000
     local context_lines = 1
@@ -114,10 +133,11 @@ end
 
 M.get_project_tree = function(project_dir)
     project_dir = project_dir or vim.fs.root(0, ".git")
-    if project_dir == nil then
+    if project_dir == nil or project_dir == "" then
         return ""
     end
-    local handle = io.popen("LANG=C.UTF-8 tree -I '.git|node_modules|target|venv|__pycache__|bin' -L 3 -F --noreport " .. vim.fn.shellescape(project_dir))
+    local handle = io.popen("LANG=C.UTF-8 tree -I '.git|node_modules|target|venv|__pycache__|bin' -L 3 -F --noreport " ..
+        vim.fn.shellescape(project_dir))
     if not handle then return "" end
     local result = handle:read("*a")
     handle:close()

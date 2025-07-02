@@ -60,15 +60,9 @@ end
 
 M.write_prompt = function(content)
     if M.client and M.client:is_active() then
-        local project_id = vim.fs.root(0, ".git")
-        if project_id == nil then
-            project_id = ""
-        end
-        local file_structure = context.get_project_tree(project_id)
-        content.file_structure = file_structure
         local request = {
             request_type = "prompt",
-            project_id = project_id,
+            project_id = content.project_id,
             content = content
         }
         local json_request = vim.fn.json_encode(request)
