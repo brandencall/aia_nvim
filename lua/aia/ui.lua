@@ -13,6 +13,9 @@ M.sideWin = function()
     M.on_submit()
 end
 
+vim.api.nvim_create_user_command('CheckWin', function() print(state.content_buf) end, {})
+
+
 M.create_side_win = function()
     state.content_buf = vim.api.nvim_create_buf(false, true)
     local width = math.floor(vim.o.columns * 0.5)

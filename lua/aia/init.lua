@@ -1,6 +1,7 @@
 local M = {}
 
 local ui = require("aia.ui");
+local _ = require("aia.ui.main");
 local tcp = require("aia.tcp_client");
 local _ = require("aia.project_manager");
 local context = require("aia.context");

@@ -20,21 +20,20 @@ M.get_project_context = function(prompt)
     end
     local harpoon_context = M.get_harpoon_context()
     local git_diff = M.get_git_diff()
-    local file_structure = M.get_project_tree(project_id)
+    -- local file_structure = M.get_project_tree(project_id)
     local request = {
         prompt = prompt,
         project_id = project_id,
         harpoon_files = harpoon_context,
         git_diff = git_diff,
-        file_structure =
-            file_structure
+        file_structure = ""
     }
     return request
 end
 
 M.get_git_diff = function()
     local max_chars = 4000
-    local context_lines = 1
+    local context_lines = 3
     local cmd = "git diff -U" .. tostring(context_lines)
     local git_diff = vim.fn.system(cmd)
 

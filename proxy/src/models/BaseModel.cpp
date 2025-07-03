@@ -12,12 +12,18 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
     std::string projectContext = project->context;
     std::string prompt = processClientContent(request.content);
     std::cout << prompt << std::endl;
-    prompt += "Prompt: " + prompt;
     return prompt;
 }
 
 std::string BaseModel::processClientContent(const network::Content &content) const {
-    std::string result = "Below are relavent files with the function signatures:\n";
+    std::string result = processHarpoonContent(content);
+    result += content.gitDiff + "\n\n";
+    result += content.fileStructure + "\n\n";
+    return result + content.prompt;
+}
+
+std::string BaseModel::processHarpoonContent(const network::Content &content) const {
+    std::string result;
     for (const auto &file : content.harpoonFiles) {
         result += file.file + ": {\n";
         for (const auto &function : file.functions) {
@@ -25,9 +31,7 @@ std::string BaseModel::processClientContent(const network::Content &content) con
         }
         result += "}\n";
     }
-    result += "Below is the git diff:\n" + content.gitDiff;
-    result += "Below is the file structure: \n" + content.fileStructure;
-    return result + content.prompt;
+    return result + "\n\n";
 }
 
 } // namespace models
