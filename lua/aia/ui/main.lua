@@ -1,6 +1,9 @@
 local M = {}
 
-local MessageBubble = require("aia.ui.message_bubble")
+local message_bubble = require("aia.ui.message_bubble")
+
+local message_top_padding = 3
+local message_padding_right = 3
 
 local state = {
     parent_win = nil,
@@ -9,10 +12,10 @@ local state = {
     content_buf = nil,
     prompt_win = nil,
     prompt_buf = nil,
-    user_win = nil,
-    user_buf = nil,
-    ai_win = nil,
-    ai_buf = nil,
+    -- user_win = nil,
+    -- user_buf = nil,
+    -- ai_win = nil,
+    -- ai_buf = nil,
 }
 
 local function create_parent_win()
@@ -51,6 +54,10 @@ local function create_content_win()
         title = " AI Assistant ",
         title_pos = "center",
     })
+    vim.api.nvim_set_option_value("wrap", true, { win = state.content_win })
+    vim.api.nvim_set_option_value("linebreak", true, { win = state.content_win })
+    vim.api.nvim_set_option_value("breakindent", true, { win = state.content_win })
+    vim.api.nvim_buf_set_option(state.content_buf, 'filetype', 'markdown')
 end
 
 local function create_prompt_win()
@@ -75,53 +82,37 @@ local function create_prompt_win()
     vim.cmd("startinsert")
 end
 
-local function create_user_win()
-    local test_prompt = {
-        "How do I create a floating window?",
-        "How do I create a floating window?",
-        "How do I create a floating window?",
-        "How do I create a floating window?",
-    }
-    local user_bubble = MessageBubble:new({
-        lines = test_prompt,
-        type = "user",
-        relative = "win",
-        win = state.content_win,
-        width = math.floor((vim.api.nvim_win_get_width(state.content_win)) * 0.4),
-        row = 1,
-        col = math.floor((vim.api.nvim_win_get_width(state.content_win)) * 0.6) - 2,
-    })
-    state.user_buf = user_bubble.buf
-    state.user_win = user_bubble.win
+local function create_user_win(prompt)
+    if not state.content_win or not state.content_buf then
+        vim.notify("Content window not created yet.", vim.log.ERROR)
+        return
+    end
+    -- Get current width of the content window to pass to MessageBubble
+    local content_win_width = vim.api.nvim_win_get_width(state.content_win)
+    message_bubble.append_message(state.content_buf, prompt, "user", content_win_width)
 end
 
-local function create_ai_win()
-    local ai_response = {
-        "Here's how you create a floating window in Neovim.",
-        "You use `nvim_open_win()` with style='minimal'",
-        "and position it with relative='editor' or 'win'.",
-    }
-    local ai_bubble = MessageBubble:new({
-        lines = ai_response,
-        type = "ai",
-        relative = "win",
-        win = state.content_win,
-        width = vim.api.nvim_win_get_width(state.content_win) - 6,
-        row = vim.api.nvim_win_get_height(state.user_win) + 3,
-        col = 1,
-    })
-    state.ai_buf = ai_bubble.buf
-    state.ai_win = ai_bubble.win
+M.ai_response = function(response)
+    if not state.content_win or not state.content_buf then
+        vim.notify("Content window not created yet.", vim.log.ERROR)
+        return
+    end
+    local lines = {}
+    for line in response:gmatch("[^\n]+") do
+        table.insert(lines, line)
+    end
+    -- Get current width of the content window to pass to MessageBubble
+    local content_win_width = vim.api.nvim_win_get_width(state.content_win)
+    message_bubble.append_message(state.content_buf, lines, "ai", content_win_width)
 end
 
 M.create_floating_win = function()
     create_parent_win()
     create_content_win()
     create_prompt_win()
-    create_user_win()
-    create_ai_win()
 
     M.setup_auto_close()
+    M.on_submit()
 end
 
 M.close_windows = function()
@@ -134,12 +125,6 @@ M.close_windows = function()
     if vim.api.nvim_win_is_valid(state.prompt_win) then
         vim.api.nvim_win_close(state.prompt_win, true)
     end
-    if vim.api.nvim_win_is_valid(state.user_win) then
-        vim.api.nvim_win_close(state.user_win, true)
-    end
-    if vim.api.nvim_win_is_valid(state.ai_win) then
-        vim.api.nvim_win_close(state.ai_win, true)
-    end
     if vim.api.nvim_buf_is_valid(state.parent_buf) then
         vim.api.nvim_buf_delete(state.parent_buf, { force = true })
     end
@@ -148,12 +133,6 @@ M.close_windows = function()
     end
     if vim.api.nvim_buf_is_valid(state.prompt_buf) then
         vim.api.nvim_buf_delete(state.prompt_buf, { force = true })
-    end
-    if vim.api.nvim_buf_is_valid(state.user_buf) then
-        vim.api.nvim_buf_delete(state.user_buf, { force = true })
-    end
-    if vim.api.nvim_buf_is_valid(state.ai_buf) then
-        vim.api.nvim_buf_delete(state.ai_buf, { force = true })
     end
 end
 
@@ -164,6 +143,25 @@ M.setup_auto_close = function()
         callback = M.close_windows,
         once = true, -- Run only once to avoid repeated triggers
     })
+end
+
+M.on_submit = function()
+    vim.keymap.set("i", "<CR>", function()
+        local prompt = vim.api.nvim_buf_get_lines(state.prompt_buf, 0, -1, false)
+        local prompt_request = table.concat(prompt, "\n")
+
+        vim.schedule(function()
+            create_user_win(prompt)
+        end)
+        vim.schedule(function()
+            vim.api.nvim_buf_set_lines(state.prompt_buf, 0, -1, false, { "" })
+        end)
+
+        vim.api.nvim_exec_autocmds("User", {
+            pattern = "OnPromptSubmit",
+            data = { input = prompt_request },
+        })
+    end, { buffer = state.prompt_buf, noremap = true, silent = true, expr = true })
 end
 
 vim.api.nvim_create_user_command('FloatingWin', M.create_floating_win, {})
