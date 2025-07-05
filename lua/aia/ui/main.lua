@@ -87,9 +87,8 @@ local function create_user_win(prompt)
         vim.notify("Content window not created yet.", vim.log.ERROR)
         return
     end
-    -- Get current width of the content window to pass to MessageBubble
     local content_win_width = vim.api.nvim_win_get_width(state.content_win)
-    message_bubble.append_message(state.content_buf, prompt, "user", content_win_width)
+    message_bubble.append_user_message(state.content_buf, prompt, content_win_width)
 end
 
 M.ai_response = function(response)
@@ -101,9 +100,7 @@ M.ai_response = function(response)
     for line in response:gmatch("[^\n]+") do
         table.insert(lines, line)
     end
-    -- Get current width of the content window to pass to MessageBubble
-    local content_win_width = vim.api.nvim_win_get_width(state.content_win)
-    message_bubble.append_message(state.content_buf, lines, "ai", content_win_width)
+    message_bubble.append_ai_message(state.content_buf, lines)
 end
 
 M.create_floating_win = function()

@@ -10,7 +10,9 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
         return request.content.prompt;
     }
     std::string projectContext = project->context;
-    std::string prompt = processClientContent(request.content);
+    projectContext +=
+        " Any and all code change recommendations should be done in code and not in a git diff unless said otherwise\n";
+    std::string prompt = projectContext + processClientContent(request.content);
     std::cout << prompt << std::endl;
     return prompt;
 }
@@ -18,7 +20,6 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
 std::string BaseModel::processClientContent(const network::Content &content) const {
     std::string result = processHarpoonContent(content);
     result += content.gitDiff + "\n\n";
-    result += content.fileStructure + "\n\n";
     return result + content.prompt;
 }
 

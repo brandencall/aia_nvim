@@ -24,9 +24,6 @@ M.setup_aia = function()
         end,
     })
     tcp.connect_tcp()
-    vim.api.nvim_set_hl(0, "AIAUserMessageBg", { bg = "#4A4A4A", fg = "#FFFFFF" }) -- Dark gray background for user
-    vim.api.nvim_set_hl(0, "AIAAiMessageBg", { bg = "#3B5998", fg = "#FFFFFF" }) -- Blue background for AI
-    vim.api.nvim_set_hl(0, "AIAContentWinBorder", { fg = "#808080" })          -- For content window border
 end
 
 vim.api.nvim_create_user_command("SetupAia", M.setup_aia, { desc = "test" })
