@@ -40,9 +40,7 @@ end
 
 local function create_content_win()
     local content_height = math.floor(vim.api.nvim_win_get_height(state.parent_win) * .85)
-
-    state.content_buf = vim.api.nvim_create_buf(false, true)
-    state.content_win = vim.api.nvim_open_win(state.content_buf, true, {
+    local content_opts = {
         relative = "win",
         win = state.parent_win,
         width = vim.api.nvim_win_get_width(state.parent_win) - 4,
@@ -53,10 +51,18 @@ local function create_content_win()
         border = "rounded",
         title = " AI Assistant ",
         title_pos = "center",
-    })
+    }
+
+    if state.content_buf and vim.api.nvim_buf_is_valid(state.content_buf) then
+        state.content_win = vim.api.nvim_open_win(state.content_buf, true, content_opts)
+        return
+    end
+    state.content_buf = vim.api.nvim_create_buf(false, true)
+    state.content_win = vim.api.nvim_open_win(state.content_buf, true, content_opts)
     vim.api.nvim_set_option_value("wrap", true, { win = state.content_win })
     vim.api.nvim_set_option_value("linebreak", true, { win = state.content_win })
     vim.api.nvim_set_option_value("breakindent", true, { win = state.content_win })
+    vim.api.nvim_buf_set_option(state.content_buf, "bufhidden", "hide")
     vim.api.nvim_buf_set_option(state.content_buf, 'filetype', 'markdown')
 end
 
@@ -124,9 +130,6 @@ M.close_windows = function()
     end
     if vim.api.nvim_buf_is_valid(state.parent_buf) then
         vim.api.nvim_buf_delete(state.parent_buf, { force = true })
-    end
-    if vim.api.nvim_buf_is_valid(state.content_buf) then
-        vim.api.nvim_buf_delete(state.content_buf, { force = true })
     end
     if vim.api.nvim_buf_is_valid(state.prompt_buf) then
         vim.api.nvim_buf_delete(state.prompt_buf, { force = true })
