@@ -12,6 +12,7 @@ luac.out
 *.ko
 *.obj
 *.elf
+proxy/bin/
 
 # Precompiled Headers
 *.gch

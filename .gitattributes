@@ -1,0 +1,10 @@
+a.out binary
+*.o binary
+*.exe binary
+# Add other known binary names (adjust based on your project)
+proxy/bin/* binary
+# Alternatively, use a pattern for files without extensions
+* binary diff=exclude
+*.cpp text
+*.h text
+*.hpp text
