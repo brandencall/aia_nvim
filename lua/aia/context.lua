@@ -34,7 +34,7 @@ end
 M.get_git_diff = function()
     local max_chars = 4000
     local context_lines = 3
-    local cmd = "git diff --no-ext-diff --text -U" .. tostring(context_lines)
+    local cmd = "git diff --no-ext-diff --text -U" .. tostring(context_lines) .. " | grep -a -v '^Binary files '"
     local git_diff = vim.fn.system(cmd)
 
     if vim.v.shell_error ~= 0 then

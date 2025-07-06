@@ -17,7 +17,7 @@ class Router {
   private:
     int _clientSocket;
     ModelManager& _modelManager;
-    int _requestsAttempted;
+    int _requestsAttempted = 0;
     int _requestsLimit = 5;
 
     void handle404Response(const ClientRequest &request);
