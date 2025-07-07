@@ -1,6 +1,5 @@
 local M = {}
 
-local ui = require("aia.ui");
 local floating_ui = require("aia.ui.main");
 local tcp = require("aia.tcp_client");
 local _ = require("aia.project_manager");
@@ -19,7 +18,6 @@ M.setup_aia = function()
         pattern = "ServerResponse",
         callback = function(event)
             local response = event.data.response
-            --ui.set_content_text(response)
             floating_ui.ai_response(response)
         end,
     })

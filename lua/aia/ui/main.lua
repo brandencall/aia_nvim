@@ -2,9 +2,6 @@ local M = {}
 
 local message_bubble = require("aia.ui.message_bubble")
 
-local message_top_padding = 3
-local message_padding_right = 3
-
 local state = {
     parent_win = nil,
     parent_buf = nil,
@@ -12,10 +9,6 @@ local state = {
     content_buf = nil,
     prompt_win = nil,
     prompt_buf = nil,
-    -- user_win = nil,
-    -- user_buf = nil,
-    -- ai_win = nil,
-    -- ai_buf = nil,
 }
 
 local function create_parent_win()
@@ -25,7 +18,6 @@ local function create_parent_win()
     local row = math.floor((vim.o.lines - height) / 3)
     local col = math.floor((vim.o.columns - width) / 2)
 
-    -- Create parent container with border
     state.parent_buf = vim.api.nvim_create_buf(false, true)
     state.parent_win = vim.api.nvim_open_win(state.parent_buf, false, {
         relative = "editor",
@@ -164,6 +156,5 @@ M.on_submit = function()
     end, { buffer = state.prompt_buf, noremap = true, silent = true, expr = true })
 end
 
-vim.api.nvim_create_user_command('FloatingWin', M.create_floating_win, {})
 
 return M
