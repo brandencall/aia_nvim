@@ -7,13 +7,11 @@ local state = {
     prompt_buf = nil
 }
 
-M.sideWin = function()
+M.side_win = function()
     M.create_side_win()
     M.setup_auto_close()
     M.on_submit()
 end
-
-vim.api.nvim_create_user_command('CheckWin', function() print(state.content_buf) end, {})
 
 
 M.create_side_win = function()

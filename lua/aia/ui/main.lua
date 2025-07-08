@@ -80,7 +80,7 @@ local function create_prompt_win()
     vim.cmd("startinsert")
 end
 
-local function create_user_win(prompt)
+local function add_user_prompt(prompt)
     if not state.content_win or not state.content_buf then
         vim.notify("Content window not created yet.", vim.log.ERROR)
         return
@@ -143,7 +143,7 @@ M.on_submit = function()
         local prompt_request = table.concat(prompt, "\n")
 
         vim.schedule(function()
-            create_user_win(prompt)
+            add_user_prompt(prompt)
         end)
         vim.schedule(function()
             vim.api.nvim_buf_set_lines(state.prompt_buf, 0, -1, false, { "" })
