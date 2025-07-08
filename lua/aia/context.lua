@@ -6,7 +6,18 @@ local function get_harpoon_function_signatures()
     local list = harpoon:list()
     local result = {}
     for _, item in ipairs(list.items) do
-        local bufnr = vim.fn.bufadd(item.value)
+        local filepath = vim.fn.fnamemodify(item.value, ":p")
+        if vim.fn.filereadable(filepath) == 0 then
+            return nil, "File not readable: " .. filepath
+        end
+        local bufnr = vim.fn.bufadd(filepath)
+        if bufnr == 0 then
+            return nil, "Failed to bufadd file: " .. filepath
+        end
+        vim.fn.bufload(bufnr)
+        if not vim.api.nvim_buf_is_loaded(bufnr) then
+            return nil, "Failed to load buffer: " .. filepath
+        end
         local signatures = M.get_function_signatures(bufnr)
         result[item.value] = signatures
     end

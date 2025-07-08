@@ -11,7 +11,10 @@ M.setup_aia = function()
         pattern = "OnPromptSubmit",
         callback = function(event)
             local prompt = event.data.input
-            tcp.write_prompt(context.get_project_context(prompt))
+            vim.schedule(function()
+                local prompt_context = context.get_project_context(prompt)
+                tcp.write_prompt(prompt_context)
+            end)
         end,
     })
     vim.api.nvim_create_autocmd("User", {
