@@ -40,7 +40,7 @@ void Router::handlePromptRequest(const ClientRequest &request) {
 
 void Router::handleResponse(std::pair<long, std::string> response, const ClientRequest &request) {
     if (response.first == 200) {
-        handleSuccessfulResponse(response);
+        handleSuccessfulResponse(request, response.second);
     } else if (response.first == 404) {
         handle404Response(request);
     } else if (response.first == 429) {
@@ -56,8 +56,9 @@ void Router::handleResponse(std::pair<long, std::string> response, const ClientR
     }
 }
 
-void Router::handleSuccessfulResponse(std::pair<long, std::string> response) {
-    sendMsg(_clientSocket, response.second);
+void Router::handleSuccessfulResponse(const ClientRequest request, std::string response) {
+    sendMsg(_clientSocket, response);
+    bool _ = database::insertChat(request, response);
     _requestsAttempted = 0;
 }
 
@@ -80,8 +81,7 @@ void Router::handle509Response(const ClientRequest &request) {
         if (response.first != 200) {
             std::cout << "Retrying failed again for model: " << currentModel->getKey() << std::endl;
         } else {
-            sendMsg(_clientSocket, response.second);
-            handleSuccessfulResponse(response);
+            handleSuccessfulResponse(request, response.second);
             break;
         }
     }
