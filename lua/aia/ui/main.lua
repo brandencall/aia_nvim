@@ -31,7 +31,7 @@ local function create_parent_win()
 end
 
 local function create_content_win()
-    local content_height = math.floor(vim.api.nvim_win_get_height(state.parent_win) * .85)
+    local content_height = math.floor(vim.api.nvim_win_get_height(state.parent_win) * .80)
     local content_opts = {
         relative = "win",
         win = state.parent_win,
@@ -59,7 +59,7 @@ local function create_content_win()
 end
 
 local function create_prompt_win()
-    local prompt_height = 1
+    local prompt_height = 3
     state.prompt_buf = vim.api.nvim_create_buf(false, true)
     state.prompt_win = vim.api.nvim_open_win(state.prompt_buf, true, {
         relative = "win",
@@ -74,8 +74,9 @@ local function create_prompt_win()
         title_pos = "left",
     })
     vim.api.nvim_buf_set_lines(state.prompt_buf, 0, -1, false, { "" })
+    vim.api.nvim_set_option_value("wrap", true, { win = state.prompt_win})
+    vim.api.nvim_set_option_value("linebreak", true, { win = state.prompt_win })
 
-    -- Start insert mode in prompt
     vim.api.nvim_set_current_win(state.prompt_win)
     vim.cmd("startinsert")
 end
