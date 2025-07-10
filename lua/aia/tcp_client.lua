@@ -1,6 +1,7 @@
 local M = {}
 
 local bit = require("bit")
+local state = require("aia.state")
 local context = require("aia.context")
 
 M.client = nil
@@ -16,9 +17,13 @@ M.connect_tcp = function()
     local port = 22222
     M.client:connect(ip, port, function(err)
         if err then
-            print('TCP error: ' .. err)
+            state.set_connected(false)
+            state.update_status_winbar()
             return
         end
+        state.set_connected(true)
+        state.update_status_winbar()
+
         M.client:read_start(function(err, data)
             if err then
                 print('Read error: ' .. err)
@@ -34,6 +39,8 @@ M.connect_tcp = function()
                     })
                 end)
             else
+                state.set_connected(false)
+                state.update_status_winbar()
                 M.client:close()
                 M.client = nil
             end
@@ -88,6 +95,8 @@ local function close_tcp()
         M.client:shutdown(function()
             M.client:close()
             M.client = nil
+            state.set_connected(false)
+            state.update_status_winbar()
         end)
     end
 end

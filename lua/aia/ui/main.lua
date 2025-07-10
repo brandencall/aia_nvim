@@ -1,6 +1,8 @@
 local M = {}
 
 local message_bubble = require("aia.ui.message_bubble")
+local connection_state = require("aia.state")
+local tcp = require("aia.tcp_client")
 
 local state = {
     parent_win = nil,
@@ -74,7 +76,7 @@ local function create_prompt_win()
         title_pos = "left",
     })
     vim.api.nvim_buf_set_lines(state.prompt_buf, 0, -1, false, { "" })
-    vim.api.nvim_set_option_value("wrap", true, { win = state.prompt_win})
+    vim.api.nvim_set_option_value("wrap", true, { win = state.prompt_win })
     vim.api.nvim_set_option_value("linebreak", true, { win = state.prompt_win })
 
     vim.api.nvim_set_current_win(state.prompt_win)
@@ -103,6 +105,9 @@ M.ai_response = function(response)
 end
 
 M.create_floating_win = function()
+    if not connection_state.is_connected then
+        tcp.connect_tcp()
+    end
     create_parent_win()
     create_content_win()
     create_prompt_win()
