@@ -6,5 +6,8 @@ namespace database {
 
 sqlite::database &getDB();
 void initializeDB();
+std::string createProjectsTable();
+std::string createChatsTable();
+std::string createChatTableTrigger();
 
 } // namespace database

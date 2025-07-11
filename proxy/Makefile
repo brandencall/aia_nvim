@@ -1,50 +1,67 @@
+# Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude -I/usr/include/gtest
 LDFLAGS = -lgmock -lgtest -lgtest_main -pthread -lcurl -lsqlite3
 
+# Directories
 SRC_DIR = src
-TEST_DIR = test
-INCLUDE_DIR = -I/usr/include 
+INCLUDE_DIR = include
 OBJ_DIR = obj
 BIN_DIR = bin
 
-TARGET = $(BIN_DIR)/proxy
-TEST_TARGET = $(BIN_DIR)/test
+UNIT_TEST_DIR = test/unit
+INTEGRATION_TEST_DIR = test/integration
 
-# Find all source files, excluding test directory
+# Binaries
+TARGET = $(BIN_DIR)/proxy
+UNIT_TEST_TARGET = $(BIN_DIR)/test_unit
+INTEGRATION_TEST_TARGET = $(BIN_DIR)/test_integration
+
+# Sources
 SOURCES = $(shell find $(SRC_DIR) -name '*.cpp')
 OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
-
-TEST_SOURCES = $(shell find $(TEST_DIR) -name '*.cpp')
-TEST_OBJECTS = $(TEST_SOURCES:$(TEST_DIR)/%.cpp=$(OBJ_DIR)/test/%.o)
-
-# Combine objects for test target (exclude main.o, include shared objects)
 SHARED_OBJECTS = $(filter-out $(OBJ_DIR)/main.o,$(OBJECTS))
-TEST_ALL_OBJECTS = $(TEST_OBJECTS) $(SHARED_OBJECTS)
 
-all: $(TARGET) $(TEST_TARGET)
+# Test source files
+UNIT_TEST_SOURCES = $(shell find $(UNIT_TEST_DIR) -name '*.cpp')
+UNIT_TEST_OBJECTS = $(UNIT_TEST_SOURCES:$(UNIT_TEST_DIR)/%.cpp=$(OBJ_DIR)/test/unit/%.o)
+
+INTEGRATION_TEST_SOURCES = $(shell find $(INTEGRATION_TEST_DIR) -name '*.cpp')
+INTEGRATION_TEST_OBJECTS = $(INTEGRATION_TEST_SOURCES:$(INTEGRATION_TEST_DIR)/%.cpp=$(OBJ_DIR)/test/integration/%.o)
+
+# Targets
+all: $(TARGET) $(UNIT_TEST_TARGET) $(INTEGRATION_TEST_TARGET)
 
 $(TARGET): $(OBJECTS) | $(BIN_DIR)
 	$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
 
-$(TEST_TARGET): $(TEST_ALL_OBJECTS) | $(BIN_DIR)
-	$(CXX) $(TEST_ALL_OBJECTS) -o $@ $(LDFLAGS)
+$(UNIT_TEST_TARGET): $(UNIT_TEST_OBJECTS) $(SHARED_OBJECTS) | $(BIN_DIR)
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
+$(INTEGRATION_TEST_TARGET): $(INTEGRATION_TEST_OBJECTS) $(SHARED_OBJECTS) | $(BIN_DIR)
+	$(CXX) $^ -o $@ $(LDFLAGS)
+
+# Compilation rules
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-$(OBJ_DIR)/test/%.o: $(TEST_DIR)/%.cpp | $(OBJ_DIR)
+$(OBJ_DIR)/test/unit/%.o: $(UNIT_TEST_DIR)/%.cpp | $(OBJ_DIR)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(OBJ_DIR)/test/integration/%.o: $(INTEGRATION_TEST_DIR)/%.cpp | $(OBJ_DIR)
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Directories
 $(BIN_DIR):
-	mkdir -p $(BIN_DIR)
+	mkdir -p $@
 
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+	mkdir -p $@
 
 clean:
-	rm -rf $(OBJ_DIR)/* $(TARGET) $(TEST_TARGET)
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 .PHONY: all clean

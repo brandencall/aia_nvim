@@ -15,5 +15,4 @@ class ModelManager {
     virtual std::shared_ptr<models::BaseModel> getCurrentAvailableModel();
     virtual void setNextModel();
 
-  private:
 };

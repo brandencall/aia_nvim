@@ -1,5 +1,5 @@
-#include "../src/ModelManager.h"
-#include "test_utils/MockBaseModel.h"
+#include "../../src/ModelManager.h"
+#include "../test_utils/MockBaseModel.h"
 #include <gtest/gtest.h>
 
 TEST(ModelManagerTest, ConstructorModelSort) {
