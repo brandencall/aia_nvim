@@ -14,9 +14,9 @@ TEST(RouterTest, Route200Request) {
   std::vector<std::shared_ptr<models::BaseModel>> models;
   models.push_back(model1);
   models.push_back(model2);
-  MockModelManager manager(models);
+  MockModelManager manager{models};
 
-  MockRouter router(1, manager);
+  MockRouter router{1, manager};
   network::HarpoonFile harpoonFile{"", {""}};
   network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};
@@ -39,9 +39,10 @@ TEST(RouterTest, SwitchModelOn404) {
   std::vector<std::shared_ptr<models::BaseModel>> models;
   models.push_back(model1);
   models.push_back(model2);
-  MockModelManager manager(models);
+  MockModelManager manager{models};
 
-  MockRouter router(1, manager);
+  MockRouter router{1, manager};
+
   network::HarpoonFile harpoonFile{"", {""}};
   network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};
@@ -90,9 +91,9 @@ TEST(RouterTest, SwitchModelOn509) {
   std::vector<std::shared_ptr<models::BaseModel>> models;
   models.push_back(model1);
   models.push_back(model2);
-  MockModelManager manager(models);
+  MockModelManager manager{models};
 
-  MockRouter router(1, manager);
+  MockRouter router{1, manager};
   network::HarpoonFile harpoonFile{"", {""}};
   network::Content content{"", {harpoonFile}, "", ""};
   network::ClientRequest request{"prompt", "", content};

@@ -71,15 +71,14 @@ int acceptClient(int serverSocket) {
     return clientSocket;
 }
 
-void clientSession(int clientSocket, ModelManager *modelManager) {
-    Router *router = new Router(clientSocket, *modelManager);
+void clientSession(int clientSocket, ModelManager &modelManager) {
+    Router router{clientSocket, modelManager};
     while (true) {
         auto prompt = handleClient(clientSocket);
         if (!prompt)
             break;
-        router->routeRequest(*prompt);
+        router.routeRequest(*prompt);
     }
-    delete router;
     close(clientSocket);
 }
 

@@ -18,7 +18,7 @@ bool insertChat(network::ClientRequest request, std::string response) {
                 << request.content.prompt << response;
         return true;
     } catch (const sqlite::sqlite_exception &e) {
-        std::cerr << "SQLite error: " << e.what();
+        std::cerr << "SQLite error: " << e.what() << std::endl;
         return false;
     }
     return false;

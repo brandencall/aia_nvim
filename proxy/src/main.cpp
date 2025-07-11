@@ -11,7 +11,7 @@
 
 int main() {
     std::vector<std::shared_ptr<models::BaseModel>> models = loadModelsFromConfig("endpoints.json");
-    ModelManager *modelManager = new ModelManager(models);
+    ModelManager modelManager{models};
     std::filesystem::create_directories("data");
     database::initializeDB();
 
@@ -24,7 +24,7 @@ int main() {
         int clientSocket = network::acceptClient(serverSocket);
         if (clientSocket == -1)
             break;
-        std::thread(network::clientSession, clientSocket, modelManager).detach();
+        std::thread(network::clientSession, clientSocket, std::ref(modelManager)).detach();
     }
     close(serverSocket);
     return 0;

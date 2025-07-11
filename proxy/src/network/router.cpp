@@ -56,7 +56,7 @@ void Router::handleResponse(std::pair<long, std::string> response, const ClientR
     }
 }
 
-void Router::handleSuccessfulResponse(const ClientRequest request, std::string response) {
+void Router::handleSuccessfulResponse(const ClientRequest &request, const std::string &response) {
     sendMsg(_clientSocket, response);
     bool _ = database::insertChat(request, response);
     _requestsAttempted = 0;
