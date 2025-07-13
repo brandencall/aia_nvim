@@ -37,3 +37,4 @@ TEST(ModelFailerTest, ModelSwitchIntegrationTest) {
             realModels[0]->getId());
   EXPECT_NO_THROW({ std::filesystem::remove_all("data"); });
 }
+

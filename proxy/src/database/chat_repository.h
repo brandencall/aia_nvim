@@ -5,11 +5,13 @@
 #include "models/project.h"
 #include "project_repository.h"
 #include <iostream>
+#include <string>
 #include <vector>
 
 namespace database {
 
-bool insertChat(network::ClientRequest request, std::string response);
-std::vector<Chat> getChatHistory(Project project);
+bool insertChat(const network::ClientRequest &request, const std::string &response);
+std::vector<Chat> getChatHistory(const Project &project);
+std::vector<std::string> getRecentConversations(const Project &project);
 
 } // namespace database

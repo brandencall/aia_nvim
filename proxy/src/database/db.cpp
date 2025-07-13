@@ -13,6 +13,7 @@ void initializeDB() {
     auto &db = getDB();
     db << createProjectsTable();
     db << createChatsTable();
+    db << createSummaryTable();
     db << createChatTableTrigger();
 }
 
@@ -30,6 +31,15 @@ std::string createChatsTable() {
            "project_ref_id INTEGER, "
            "prompt TEXT, "
            "response TEXT, "
+           "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
+           "FOREIGN KEY(project_ref_id) REFERENCES projects(id) ON DELETE CASCADE);";
+}
+
+std::string createSummaryTable() {
+    return "CREATE TABLE IF NOT EXISTS summaries ("
+           "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+           "project_ref_id INTEGER, "
+           "summary TEXT, "
            "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, "
            "FOREIGN KEY(project_ref_id) REFERENCES projects(id) ON DELETE CASCADE);";
 }
