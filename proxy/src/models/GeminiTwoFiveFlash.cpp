@@ -17,7 +17,7 @@ int GeminiTwoFiveFlash::getRateLimitPerDay() const { return _rateLimitPerDay; }
 std::pair<long, std::string> GeminiTwoFiveFlash::processPrompt(const network::ClientRequest &request) const {
     std::string endpoint = _url + _key;
     std::string prompt = processClientRequest(request);
-    std::pair<long, std::string> response = sendRequest(endpoint, prompt);
+    std::pair<long, std::string> response = utils::sendRequest(endpoint, prompt);
     if (response.second.empty()) {
         std::cout << "response from llm is empty :(" << std::endl;
         return response;

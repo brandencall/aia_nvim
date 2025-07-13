@@ -13,7 +13,7 @@ TEST(ModelFailerTest, ModelSwitchIntegrationTest) {
   database::initializeDB();
 
   std::vector<std::shared_ptr<models::BaseModel>> realModels =
-      loadModelsFromConfig(
+      utils::loadModelsFromConfig(
           "/home/brabs/Projects/plugins/aia.nvim/proxy/endpoints.json");
 
   auto mockModel =
@@ -37,4 +37,3 @@ TEST(ModelFailerTest, ModelSwitchIntegrationTest) {
             realModels[0]->getId());
   EXPECT_NO_THROW({ std::filesystem::remove_all("data"); });
 }
-

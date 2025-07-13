@@ -8,6 +8,8 @@
 
 using json = nlohmann::json;
 
+namespace utils {
+
 std::vector<std::shared_ptr<models::BaseModel>> loadModelsFromConfig(const std::string &filePath) {
     std::ifstream jsonFile(filePath);
     if (!jsonFile.is_open()) {
@@ -21,3 +23,5 @@ std::vector<std::shared_ptr<models::BaseModel>> loadModelsFromConfig(const std::
     }
     return models;
 }
+
+} // namespace utils

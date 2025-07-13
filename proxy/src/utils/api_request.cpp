@@ -5,6 +5,8 @@
 #include <string>
 #include <utility>
 
+namespace utils {
+
 static size_t writeMemoryCallback(void *contents, size_t size, size_t nmemb, std::string *userp) {
     userp->append((char *)contents, size * nmemb);
     return size * nmemb;
@@ -56,5 +58,6 @@ std::pair<long, std::string> sendRequest(const std::string &endpoint, const std:
     curl_slist_free_all(headers);
     curl_easy_cleanup(curl);
     return {http_code, response_data};
-
 }
+
+} // namespace utils

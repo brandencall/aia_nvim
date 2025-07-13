@@ -10,7 +10,7 @@
 #include <vector>
 
 int main() {
-    std::vector<std::shared_ptr<models::BaseModel>> models = loadModelsFromConfig("endpoints.json");
+    std::vector<std::shared_ptr<models::BaseModel>> models = utils::loadModelsFromConfig("endpoints.json");
     ModelManager modelManager{models};
     std::filesystem::create_directories("data");
     database::initializeDB();
