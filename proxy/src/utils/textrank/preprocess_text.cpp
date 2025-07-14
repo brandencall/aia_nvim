@@ -1,31 +1,18 @@
-#include "textrank.h"
+#include "preprocess_text.h"
 #include <algorithm>
+#include <cctype>
 #include <cmark.h>
-#include <iostream>
-#include <numeric>
 
 namespace utils {
-
-std::string summarizeText(const std::vector<std::string> &text) {
-    std::string result;
-    std::string full_text =
-        std::accumulate(text.begin(), text.end(), std::string(), [](const std::string &acc, const std::string &line) {
-            return acc.empty() ? line : acc + "\n" + line;
-        });
-    std::string plainText = stripMarkdown(full_text);
-    return result;
-}
 
 std::string stripMarkdown(const std::string &text) {
     cmark_parser *parser = cmark_parser_new(CMARK_OPT_DEFAULT);
     cmark_parser_feed(parser, text.c_str(), text.size());
     cmark_node *document = cmark_parser_finish(parser);
-
     // Traverse AST and collect plain text
     std::string result;
     cmark_iter *iter = cmark_iter_new(document);
     cmark_event_type ev_type;
-
     while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
         cmark_node *node = cmark_iter_get_node(iter);
         if (ev_type == CMARK_EVENT_ENTER) {
@@ -44,15 +31,12 @@ std::string stripMarkdown(const std::string &text) {
             }
         }
     }
-
     cmark_iter_free(iter);
     cmark_node_free(document);
     cmark_parser_free(parser);
-
     if (!result.empty() && result.back() == '\n') {
         result.pop_back();
     }
-
     return result;
 }
 
@@ -65,6 +49,7 @@ std::vector<std::string> getSentences(const std::string &text) {
         if (endOfSentance == std::string::npos) {
             std::string lastSentence = text.substr(startIndex);
             if (!lastSentence.empty()) {
+                cleanSentence(lastSentence);
                 result.push_back(lastSentence);
             }
             break;
@@ -73,11 +58,9 @@ std::vector<std::string> getSentences(const std::string &text) {
             continue;
         }
         moveIndexPastWhitespace(text, startIndex);
-        size_t length = endOfSentance - startIndex + 1;
+        size_t length = endOfSentance - startIndex;
         std::string sentence = text.substr(startIndex, length);
-        sentence.erase(std::remove(sentence.begin(), sentence.end(), '\n'), sentence.end());
-        if (sentence[sentence.length() - 1] == ' ')
-            sentence.pop_back();
+        cleanSentence(sentence);
         result.push_back(sentence);
         startIndex = endOfSentance + 1;
     }
@@ -88,6 +71,16 @@ void moveIndexPastWhitespace(const std::string &text, size_t &startIndex) {
     while (startIndex < text.length() && text[startIndex] == ' ') {
         startIndex++;
     }
+}
+
+void cleanSentence(std::string &sentence) {
+    char lettersToRemove[]{':', '/', ',', '-'};
+    std::transform(sentence.begin(), sentence.end(), sentence.begin(), [](unsigned char c) { return std::tolower(c); });
+    for (const auto &l : lettersToRemove) {
+        sentence.erase(std::remove(sentence.begin(), sentence.end(), l), sentence.end());
+    }
+    if (sentence[sentence.length() - 1] == ' ')
+        sentence.pop_back();
 }
 
 } // namespace utils
