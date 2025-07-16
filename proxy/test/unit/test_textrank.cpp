@@ -72,14 +72,6 @@ Run the following command:)";
   ASSERT_EQ(result, expected);
 }
 
-TEST(TextRankTest, GetWordsFromSentence) {
-  std::string test = "This is a test";
-  std::vector<std::string> expected{"This", "is", "a", "test"};
-  utils::tfidf tfidf{std::vector<std::string>{}};
-  std::vector<std::string> result = tfidf.getWordsFromSentence(test);
-  ASSERT_EQ(result, expected);
-}
-
 TEST(TextRankTest, ComputeTFIDF) {
   std::vector<std::string> test = {
       "the cat sat on the mat",
