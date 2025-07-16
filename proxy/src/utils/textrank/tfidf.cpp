@@ -14,22 +14,22 @@ tfidf::tfidf(const std::vector<std::string> sentences) : sentences{sentences} {
     }
 }
 
+//May not  need to keep a persistant tfidfMatrix within the class
 std::unordered_map<int, std::unordered_map<std::string, double>> tfidf::computeTFIDF() {
-    std::unordered_map<int, std::unordered_map<std::string, double>> result;
-    std::unordered_map<int, std::unordered_map<std::string, double>> tf = calculateTF();
+    tfidfMatrix = calculateTF();
     std::unordered_map<std::string, double> idf = calculateIDF();
-    for (const auto &sentence : tf) {
+    for (const auto &sentenceEntry : tfidfMatrix) {
         std::unordered_map<std::string, double> tfIdfSentenceScores;
-        for (const auto &tfScoreMap : sentence.second) {
+        for (const auto &tfScoreMap : sentenceEntry.second) {
             auto idfPair = idf.find(tfScoreMap.first);
             if (idfPair == nullptr) {
                 continue;
             }
             tfIdfSentenceScores[tfScoreMap.first] = idfPair->second * tfScoreMap.second;
         }
-        result[sentence.first] = tfIdfSentenceScores;
+        tfidfMatrix[sentenceEntry.first] = tfIdfSentenceScores;
     }
-    return result;
+    return tfidfMatrix;
 }
 
 std::vector<std::string> tfidf::getWordsFromSentence(const std::string &sentence) {
