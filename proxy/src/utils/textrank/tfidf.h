@@ -10,12 +10,12 @@ class tfidf {
 
   public:
     // Maps sentence index: <wordIndex, tfidf score>
-    std::unordered_map<int, std::unordered_map<int, double>> tfidfMatrix;
+    std::unordered_map<int, std::unordered_map<std::string, double>> tfidfMatrix;
     const std::vector<std::string> sentences;
 
     tfidf(const std::vector<std::string> sentences) : sentences{sentences} {}
 
-    std::unordered_map<int, std::unordered_map<int, double>> computeTFIDF();
+    std::unordered_map<int, std::unordered_map<std::string, double>> computeTFIDF();
     int getOrAddIndex(const std::string &word);
     std::string getWordFromIndex(int index) const;
     std::vector<std::string> getWordsFromSentence(const std::string &sentence);

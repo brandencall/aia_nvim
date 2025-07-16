@@ -8,23 +8,19 @@
 
 namespace utils {
 
-std::unordered_map<int, std::unordered_map<int, double>> tfidf::computeTFIDF() {
-    std::unordered_map<int, std::unordered_map<int, double>> result;
-    std::cout << "here" << std::endl;
+std::unordered_map<int, std::unordered_map<std::string, double>> tfidf::computeTFIDF() {
+    std::unordered_map<int, std::unordered_map<std::string, double>> result;
     std::unordered_map<int, std::unordered_map<std::string, double>> tf = calculateTF();
-    std::cout << "here" << std::endl;
     std::unordered_map<std::string, double> idf = calculateIDF();
-    std::cout << "here" << std::endl;
     for (const auto &sentence : tf) {
-        std::unordered_map<int, double> tfIdfSentenceScores;
+        std::unordered_map<std::string, double> tfIdfSentenceScores;
         for (const auto &tfScoreMap : sentence.second) {
             auto idfPair = idf.find(tfScoreMap.first);
-            if (idfPair == nullptr){
+            if (idfPair == nullptr) {
                 continue;
             }
-            std::cout << "here" << std::endl;
-            int wordIndex = getOrAddIndex(tfScoreMap.first);
-            tfIdfSentenceScores[wordIndex] = idfPair->second * tfScoreMap.second;
+            // int wordIndex = getOrAddIndex(tfScoreMap.first);
+            tfIdfSentenceScores[tfScoreMap.first] = idfPair->second * tfScoreMap.second;
         }
         result[sentence.first] = tfIdfSentenceScores;
     }
@@ -62,6 +58,7 @@ std::unordered_map<int, std::unordered_map<std::string, double>> tfidf::calculat
     std::unordered_map<int, std::unordered_map<std::string, double>> tf;
     for (size_t i = 0; i < sentences.size(); ++i) {
         const std::string &sentence = sentences[i];
+        // TODO: Should just make a list of words at the start of the algorithm
         std::vector<std::string> words = getWordsFromSentence(sentence);
 
         std::unordered_map<std::string, int> wordCounts;
@@ -81,10 +78,10 @@ std::unordered_map<int, std::unordered_map<std::string, double>> tfidf::calculat
 std::unordered_map<std::string, double> tfidf::calculateIDF() {
     std::unordered_map<std::string, double> idf;
     for (const auto &sentence : sentences) {
+        // TODO: Should just make a list of words at the start of the algorithm
         std::vector<std::string> words = getWordsFromSentence(sentence);
         for (const auto &word : words) {
-            if (idf.find(word) != idf.end()) {
-                // calculate the idf for that word
+            if (idf.find(word) == idf.end()) {
                 idf[word] = calculateIndividualWordIDF(word);
             }
         }
@@ -99,7 +96,11 @@ double tfidf::calculateIndividualWordIDF(const std::string &word) {
             wordCount++;
         }
     }
-    return std::log(sentences.size() / (1 + wordCount));
+    // This shouldn't happen
+    if (wordCount == 0) {
+        return 0;
+    }
+    return std::log10(static_cast<double>(sentences.size()) / (wordCount));
 }
 
 } // namespace utils

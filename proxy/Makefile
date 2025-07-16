@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude -I/usr/include/gtest
+CXXFLAGS = -std=c++23 -Wall -Wextra -Iinclude -I/usr/include/gtest
 LDFLAGS = -lgmock -lgtest -lgtest_main -pthread -lcurl -lsqlite3 -lcmark
 
 # Directories

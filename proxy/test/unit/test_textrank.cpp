@@ -2,6 +2,7 @@
 #include "../../src/utils/textrank/tfidf.h"
 #include <cmath>
 #include <gtest/gtest.h>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -85,9 +86,26 @@ TEST(TextRankTest, ComputeTFIDF) {
       "the dog played in the park",
       "cats and dogs are great pets",
   };
+  // Only building the expected result for cat
+  int sentenceIndex = 0;
+  std::string word = "cat";
+  double value = 0.029348543175946873;
 
   utils::tfidf tfidf{test};
-  std::unordered_map<int, std::unordered_map<int, double>> result =
+  std::unordered_map<int, std::unordered_map<std::string, double>> result =
       tfidf.computeTFIDF();
-  std::cout << result.size() << std::endl;
+
+  auto firstSentence = result[sentenceIndex];
+  auto catResult = firstSentence.find("cat");
+  ASSERT_NE(catResult, firstSentence.end());
+  ASSERT_DOUBLE_EQ(catResult->second, value);
+
+  // used to print out all tfidf values
+  // for (const auto &r : result) {
+  //   std::cout << r.first << std::endl;
+  //   auto scores = r.second;
+  //   for (const auto &s : scores) {
+  //     std::cout << s.first << ": " << s.second << std::endl;
+  //   }
+  // }
 }
