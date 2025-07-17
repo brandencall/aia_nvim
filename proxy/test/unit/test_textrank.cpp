@@ -79,25 +79,13 @@ TEST(TextRankTest, ComputeTFIDF) {
       "cats and dogs are great pets",
   };
   // Only building the expected result for cat
-  int sentenceIndex = 0;
   std::string word = "cat";
   double value = 0.029348543175946873;
 
   utils::tfidf tfidf{test};
-  std::unordered_map<int, std::unordered_map<std::string, double>> result =
-      tfidf.computeTFIDF();
 
-  auto firstSentence = result[sentenceIndex];
-  auto catResult = firstSentence.find("cat");
-  ASSERT_NE(catResult, firstSentence.end());
-  ASSERT_DOUBLE_EQ(catResult->second, value);
-
-  // used to print out all tfidf values
-  // for (const auto &r : result) {
-  //   std::cout << r.first << std::endl;
-  //   auto scores = r.second;
-  //   for (const auto &s : scores) {
-  //     std::cout << s.first << ": " << s.second << std::endl;
-  //   }
-  // }
+  int catIndex = tfidf.getIndexFromWord(word);
+  ASSERT_DOUBLE_EQ(tfidf.matrix[0][catIndex], value);
+  ASSERT_DOUBLE_EQ(tfidf.matrix[1][catIndex], 0);
+  ASSERT_DOUBLE_EQ(tfidf.matrix[2][catIndex], 0);
 }
