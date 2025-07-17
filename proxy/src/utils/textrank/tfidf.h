@@ -15,15 +15,8 @@ class tfidf {
 
     explicit tfidf(const std::vector<std::string> &sentences);
 
-    void buildSentenceWordMap(const std::vector<std::string> &sentences);
-    void buildWordIndexes();
-    void computeTFIDF();
     int getIndexFromWord(const std::string &word);
     std::string getWordFromIndex(int index) const;
-    std::vector<std::string> getWordsFromSentence(const std::string &sentence);
-    void calculateTF();
-    std::unordered_map<std::string, double> calculateIDF();
-    double calculateIndividualWordIDF(const std::string &word);
 
   private:
     // Using this for the idf calculation
@@ -31,6 +24,14 @@ class tfidf {
     std::unordered_map<std::string, int> wordToIndex;
     std::unordered_map<int, std::string> indexToWord;
     std::unordered_map<int, std::vector<std::string>> sentenceWordMap;
+
+    void buildSentenceWordMap(const std::vector<std::string> &sentences);
+    void buildWordIndexes();
+    void computeTFIDF();
+    std::vector<std::string> getWordsFromSentence(const std::string &sentence);
+    void calculateTF();
+    std::unordered_map<std::string, double> calculateIDF();
+    double calculateIndividualWordIDF(const std::string &word);
 };
 
 } // namespace utils
