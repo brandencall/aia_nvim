@@ -1,6 +1,5 @@
 #include "tfidf.h"
 #include <cmath>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -8,14 +7,14 @@
 
 namespace utils {
 
-tfidf::tfidf(const std::vector<std::string> sentences) : sentences{sentences} {
+tfidf::tfidf(const std::vector<std::string> &sentences) : sentences(sentences) {
     buildSentenceWordMap(sentences);
     buildWordIndexes();
     matrix = std::vector<std::vector<double>>(sentences.size(), std::vector<double>(wordToIndex.size(), 0.0));
     computeTFIDF();
 }
 
-void tfidf::buildSentenceWordMap(const std::vector<std::string> sentences) {
+void tfidf::buildSentenceWordMap(const std::vector<std::string> &sentences) {
     for (size_t i = 0; i < sentences.size(); i++) {
         sentenceWordMap[i] = getWordsFromSentence(sentences[i]);
     }
