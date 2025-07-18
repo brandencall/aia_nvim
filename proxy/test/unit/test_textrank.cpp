@@ -1,6 +1,6 @@
+#include "../../src/utils/textrank/cosine_similarity.h"
 #include "../../src/utils/textrank/preprocess_text.h"
 #include "../../src/utils/textrank/tfidf.h"
-#include <cmath>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <string>
@@ -88,4 +88,37 @@ TEST(TextRankTest, ComputeTFIDF) {
   ASSERT_DOUBLE_EQ(tfidf.matrix[0][catIndex], value);
   ASSERT_DOUBLE_EQ(tfidf.matrix[1][catIndex], 0);
   ASSERT_DOUBLE_EQ(tfidf.matrix[2][catIndex], 0);
+}
+
+TEST(TextRankTest, ComputeCosineSimilarity) {
+  std::vector<std::string> test = {
+      "the cat sat on the mat", "the dog sat on the log",
+      "the cat chased the mouse", "the dog chased the cat"};
+
+  // Similarity between sentence 1 and 2: 0.30427
+  // Similarity between sentence 1 and 3: 0.0304869
+  // Similarity between sentence 1 and 4: 0.0470432
+  // Similarity between sentence 2 and 3: 0
+  // Similarity between sentence 2 and 4: 0.256446
+  // Similarity between sentence 3 and 4: 0.349725
+  std::vector<double> expected = {
+      0.30426990995437397,
+      0.030486859851721525,
+      0.047043236224699983,
+      0,
+      0.25644572558810497,
+      0.34972524594261745,
+  };
+
+  int expectedCount = 0;
+  utils::tfidf tfidf{test};
+
+  for (size_t i = 0; i < tfidf.matrix.size(); ++i) {
+    for (size_t j = i + 1; j < tfidf.matrix.size(); ++j) {
+      double similarity =
+          utils::cosineSimilarity(tfidf.matrix[i], tfidf.matrix[j]);
+      ASSERT_DOUBLE_EQ(similarity, expected[expectedCount]);
+      ++expectedCount;
+    }
+  }
 }
