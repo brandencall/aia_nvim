@@ -18,11 +18,11 @@ bool insertSummary(const network::ClientRequest &request, const std::string &sum
     return false;
 }
 
-Summary getLastSummary(const Project &project) {
+Summary getLastSummary(int projectId) {
     Summary result;
     getDB() << "SELECT id, project_ref_id, summary, timestamp FROM summaries WHERE project_ref_id = ? ORDER BY "
                "timestamp DESC LIMIT 1;"
-            << project.id >>
+            << projectId >>
         [&](int id, int project_ref_id, std::string summary, std::string timestamp) {
             result = Summary{id, project_ref_id, std::move(summary), std::move(timestamp)};
         };

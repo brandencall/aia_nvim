@@ -12,6 +12,7 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
     std::string projectContext = project->context;
     projectContext +=
         " Any and all code change recommendations should be done in code and not in a git diff unless said otherwise\n";
+    projectContext += "Summary of previous converstion: " + database::getLastSummary(project->id).summary + '\n';
     std::string prompt = projectContext + processClientContent(request.content);
     std::cout << prompt << std::endl;
     return prompt;

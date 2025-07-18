@@ -11,6 +11,6 @@
 namespace database {
 
 bool insertSummary(const network::ClientRequest &request, const std::string &summary);
-Summary getLastSummary(const Project &project);
+Summary getLastSummary(int id);
 
 } // namespace database

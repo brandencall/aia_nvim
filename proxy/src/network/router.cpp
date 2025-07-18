@@ -64,7 +64,6 @@ void Router::handleSuccessfulResponse(const ClientRequest &request, const std::s
         std::vector<std::string> latestConvos = database::getRecentConversations(request);
         std::string summary = utils::summarizeText(latestConvos);
         database::insertSummary(request, summary);
-        std::cout << "SUMMARY: " << summary << std::endl;
     }
 
     _requestsAttempted = 0;

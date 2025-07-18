@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../database/project_repository.h"
+#include "../database/summary_repository.h"
 #include <string>
 #include <utility>
 
