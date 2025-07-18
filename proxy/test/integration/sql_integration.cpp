@@ -18,7 +18,7 @@ TEST(SQLiteIntegration, GetRecentConversations) {
 
   database::insertProject(clientRequest);
   database::insertChat(clientRequest, response);
-  std::vector<std::string> result = database::getRecentConversations(project);
+  std::vector<std::string> result = database::getRecentConversations(clientRequest);
   ASSERT_EQ(result[0], "Just say Hello World Hello World");
   EXPECT_NO_THROW({ std::filesystem::remove_all("data"); });
 }

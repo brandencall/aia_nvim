@@ -3,6 +3,7 @@
 #include <ostream>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace network {
 void Router::routeRequest(const ClientRequest &request) {
@@ -58,7 +59,14 @@ void Router::handleResponse(std::pair<long, std::string> response, const ClientR
 
 void Router::handleSuccessfulResponse(const ClientRequest &request, const std::string &response) {
     sendMsg(_clientSocket, response);
-    bool _ = database::insertChat(request, response);
+    bool insertedChat = database::insertChat(request, response);
+    if (insertedChat) {
+        std::vector<std::string> latestConvos = database::getRecentConversations(request);
+        std::string summary = utils::summarizeText(latestConvos);
+        database::insertSummary(request, summary);
+        std::cout << "SUMMARY: " << summary << std::endl;
+    }
+
     _requestsAttempted = 0;
 }
 

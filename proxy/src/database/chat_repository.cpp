@@ -36,16 +36,21 @@ std::vector<Chat> getChatHistory(const Project &project) {
     return result;
 }
 
-std::vector<std::string> getRecentConversations(const Project &project) {
+std::vector<std::string> getRecentConversations(const network::ClientRequest &request) {
+    std::optional<Project> project = getProject(request);
+    if (project == std::nullopt) {
+        std::cout << "There is not project to get chart history for." << std::endl;
+        return {};
+    }
     std::vector<std::string> result;
+    // select prompt || ' ' || response from chats where project_ref_id = ( select id from projects where id = 4 ) order
+    // by timestamp desc limit 3;
     getDB() << "SELECT prompt || ' ' || response "
                "FROM chats "
                "WHERE project_ref_id = ( "
-               "SELECT id FROM projects WHERE project_id = ? "
-               ") "
-               "ORDER BY timestamp DESC "
-               "LIMIT 10; "
-            << project.id >>
+               "SELECT id FROM projects WHERE id = ? ) "
+               "ORDER BY timestamp DESC LIMIT 10; "
+            << project->id >>
         [&](std::string combined) { result.push_back(combined); };
     return result;
 }

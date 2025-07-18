@@ -2,6 +2,8 @@
 #include "../ModelManager.h"
 #include "../database/chat_repository.h"
 #include "../database/project_repository.h"
+#include "../database/summary_repository.h"
+#include "../utils/textrank/textrank.h"
 #include "tcp.h"
 #include <string>
 #include <utility>

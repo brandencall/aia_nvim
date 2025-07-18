@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <cmark.h>
 #include <cstddef>
-#include <iostream>
 #include <numeric>
 #include <sstream>
 #include <string>
