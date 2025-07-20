@@ -69,7 +69,7 @@ Run the following command:)";
       "code blocks with syntax highlighting",
       "links and images",
       "usage",
-      "run the following command"};
+      "run the following command:"};
 
   ASSERT_EQ(result, expected);
 }
@@ -165,8 +165,8 @@ TEST(TextRankTest, SummarizeText) {
   std::string expected =
       "can you move the project review to tomorrow afternoon. what's the "
       "weather like today in new york. would you like me to notify the team. "
-      "i've moved your project review to 200 pm tomorrow. you have a team sync "
-      "at 1000 am a client call at 100 pm and a project review at 330 pm. ";
+      "i've moved your project review to 2:00 pm tomorrow. you have a team sync "
+      "at 10:00 am a client call at 1:00 pm and a project review at 3:30 pm. ";
 
   std::string result = utils::summarizeText(test);
 
