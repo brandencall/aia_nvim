@@ -74,7 +74,7 @@ void moveIndexPastWhitespace(const std::string &text, size_t &startIndex) {
 }
 
 void cleanSentence(std::string &sentence) {
-    char lettersToRemove[]{':', '/', ',', '-'};
+    char lettersToRemove[]{',',};
     std::transform(sentence.begin(), sentence.end(), sentence.begin(), [](unsigned char c) { return std::tolower(c); });
     for (const auto &l : lettersToRemove) {
         sentence.erase(std::remove(sentence.begin(), sentence.end(), l), sentence.end());
