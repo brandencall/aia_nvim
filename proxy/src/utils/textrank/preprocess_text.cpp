@@ -44,25 +44,29 @@ std::vector<std::string> getSentences(const std::string &text) {
     std::vector<std::string> result;
     size_t startIndex = 0;
 
-    while (startIndex <= text.length()) {
-        size_t endOfSentance = text.find_first_of(".!?\n", startIndex);
-        if (endOfSentance == std::string::npos) {
+    while (startIndex < text.length()) {
+        size_t endOfSentence = text.find_first_of(".!?\n", startIndex);
+        if (endOfSentence == std::string::npos) {
             std::string lastSentence = text.substr(startIndex);
             if (!lastSentence.empty()) {
                 cleanSentence(lastSentence);
                 result.push_back(lastSentence);
             }
             break;
-        } else if (endOfSentance == startIndex) {
+        } else if (endOfSentence == startIndex) {
             startIndex++;
             continue;
         }
         moveIndexPastWhitespace(text, startIndex);
-        size_t length = endOfSentance - startIndex;
+        size_t length = endOfSentence - startIndex;
         std::string sentence = text.substr(startIndex, length);
+        if (sentence.length() <= 1) {
+            startIndex = endOfSentence + 1;
+            continue;
+        }
         cleanSentence(sentence);
         result.push_back(sentence);
-        startIndex = endOfSentance + 1;
+        startIndex = endOfSentence + 1;
     }
     return result;
 }
@@ -74,7 +78,9 @@ void moveIndexPastWhitespace(const std::string &text, size_t &startIndex) {
 }
 
 void cleanSentence(std::string &sentence) {
-    char lettersToRemove[]{',',};
+    char lettersToRemove[]{
+        ',',
+    };
     std::transform(sentence.begin(), sentence.end(), sentence.begin(), [](unsigned char c) { return std::tolower(c); });
     for (const auto &l : lettersToRemove) {
         sentence.erase(std::remove(sentence.begin(), sentence.end(), l), sentence.end());

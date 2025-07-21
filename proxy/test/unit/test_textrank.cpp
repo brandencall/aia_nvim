@@ -29,6 +29,7 @@ Run the following command:
 ./run_project --help
 ```
 )";
+  std::string notMarkdown = "Hello World";
   std::string expected = R"(My Project
 Welcome to My Project! This project is a simple example showing how to write Markdown.
 Features
@@ -40,6 +41,8 @@ Usage
 Run the following command:)";
 
   std::string result = utils::stripMarkdown(markdown);
+  std::string notMarkdownResult = utils::stripMarkdown(notMarkdown);
+  std::cout << notMarkdown << '\n';
   ASSERT_EQ(result, expected);
 }
 
@@ -165,7 +168,8 @@ TEST(TextRankTest, SummarizeText) {
   std::string expected =
       "can you move the project review to tomorrow afternoon. what's the "
       "weather like today in new york. would you like me to notify the team. "
-      "i've moved your project review to 2:00 pm tomorrow. you have a team sync "
+      "i've moved your project review to 2:00 pm tomorrow. you have a team "
+      "sync "
       "at 10:00 am a client call at 1:00 pm and a project review at 3:30 pm. ";
 
   std::string result = utils::summarizeText(test);

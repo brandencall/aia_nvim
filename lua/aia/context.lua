@@ -62,6 +62,9 @@ end
 M.get_harpoon_context = function()
     local harpoon_signatures = get_harpoon_function_signatures()
     local result = {}
+    if harpoon_signatures == nil then
+        return result
+    end
     for key, value in pairs(harpoon_signatures) do
         table.insert(result, { file = key, functions = value })
     end
