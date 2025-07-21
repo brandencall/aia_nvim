@@ -92,7 +92,7 @@ local function add_user_prompt(prompt)
     message_bubble.append_user_message(state.content_buf, prompt, content_win_width)
 end
 
-M.ai_response = function(response)
+M.response = function(response)
     if not state.content_win or not state.content_buf then
         vim.notify("Content window not created yet.", vim.log.ERROR)
         return
@@ -117,20 +117,25 @@ M.create_floating_win = function()
 end
 
 M.close_windows = function()
-    if vim.api.nvim_win_is_valid(state.parent_win) then
-        vim.api.nvim_win_close(state.parent_win, true)
+    local windows_to_close = {
+        state.parent_win,
+        state.content_win,
+        state.prompt_win,
+    }
+    local buffers_to_delete = {
+        state.parent_buf,
+        state.content_buf, 
+        state.prompt_buf,
+    }
+    for _, win_id in ipairs(windows_to_close) do
+        if vim.api.nvim_win_is_valid(win_id) then
+            vim.api.nvim_win_close(win_id, true)
+        end
     end
-    if vim.api.nvim_win_is_valid(state.content_win) then
-        vim.api.nvim_win_close(state.content_win, true)
-    end
-    if vim.api.nvim_win_is_valid(state.prompt_win) then
-        vim.api.nvim_win_close(state.prompt_win, true)
-    end
-    if vim.api.nvim_buf_is_valid(state.parent_buf) then
-        vim.api.nvim_buf_delete(state.parent_buf, { force = true })
-    end
-    if vim.api.nvim_buf_is_valid(state.prompt_buf) then
-        vim.api.nvim_buf_delete(state.prompt_buf, { force = true })
+    for _, buf_id in ipairs(buffers_to_delete) do
+        if vim.api.nvim_buf_is_valid(buf_id) then
+            vim.api.nvim_buf_delete(buf_id, { force = true })
+        end
     end
 end
 

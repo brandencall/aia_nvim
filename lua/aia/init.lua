@@ -21,7 +21,7 @@ M.setup_aia = function()
         pattern = "ServerResponse",
         callback = function(event)
             local response = event.data.response
-            floating_ui.ai_response(response)
+            floating_ui.response(response)
         end,
     })
     tcp.connect_tcp()
