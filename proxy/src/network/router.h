@@ -12,8 +12,7 @@ namespace network {
 
 class Router {
   public:
-    Router(int clientSocket, ModelManager &modelManager)
-        : _clientSocket{clientSocket}, _modelManager{modelManager} {}
+    Router(int clientSocket, ModelManager &modelManager) : _clientSocket{clientSocket}, _modelManager{modelManager} {}
     void routeRequest(const ClientRequest &request);
     void handleResponse(std::pair<long, std::string> response, const ClientRequest &request);
     void handlePromptRequest(const ClientRequest &request);
@@ -28,6 +27,7 @@ class Router {
     void handle429Response(const ClientRequest &request);
     void handle509Response(const ClientRequest &request);
     void handleNewProjectRequest(const ClientRequest &request);
+    void handleGetProjectRequest(const ClientRequest &request);
     void handleSuccessfulResponse(const ClientRequest &request, const std::string &response);
 };
 } // namespace network

@@ -1,5 +1,7 @@
 #include "router.h"
+#include "tcp.h"
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -10,6 +12,8 @@ void Router::routeRequest(const ClientRequest &request) {
     if (request.request_type == "new_project") {
         std::cout << "New Project request" << std::endl;
         handleNewProjectRequest(request);
+    } else if (request.request_type == "get_project") {
+        handleGetProjectRequest(request);
     } else if (request.request_type == "prompt") {
         handlePromptRequest(request);
     }
@@ -21,6 +25,15 @@ void Router::handleNewProjectRequest(const ClientRequest &request) {
         sendMsg(_clientSocket, "Successfully inserted new Project: " + request.project_id);
     } else {
         sendMsg(_clientSocket, "Failed to insert project. Project may already exist.");
+    }
+}
+
+void Router::handleGetProjectRequest(const ClientRequest &request) {
+    std::optional<database::Project> project = database::getProject(request);
+    if (project == std::nullopt) {
+        sendMsg(_clientSocket, "No project exists for " + project->project_id);
+    } else {
+        sendMsg(_clientSocket, project->context);
     }
 }
 
