@@ -33,6 +33,7 @@ void Router::handleGetProjectRequest(const ClientRequest &request) {
     if (project == std::nullopt) {
         sendMsg(_clientSocket, "No project exists for " + project->project_id);
     } else {
+        std::cout << "The project context is: " << project->context << '\n';
         sendMsg(_clientSocket, project->context);
     }
 }
