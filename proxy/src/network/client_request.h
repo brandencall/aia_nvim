@@ -4,11 +4,10 @@ using json = nlohmann::json;
 
 namespace network {
 
-struct HarpoonFile{
+struct HarpoonFile {
     std::string file;
     std::vector<std::string> functions;
 };
-
 
 struct Content {
     std::string prompt;
@@ -20,7 +19,7 @@ struct Content {
 struct ClientRequest {
     std::string request_type;
     std::string project_id;
-    Content content;
+    std::optional<Content> content;
 };
 
 void from_json(const json &j, HarpoonFile &harpoon);

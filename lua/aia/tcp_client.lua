@@ -100,13 +100,6 @@ M.get_project = function(project_id)
         local request = {
             request_type = "get_project",
             project_id = project_id,
-            content = {
-                prompt = "",
-                project_id = project_id,
-                harpoon_files = {},
-                git_diff = "",
-                file_structure = ""
-            }
         }
         local json_request = vim.json.encode(request)
         send_tcp(json_request)
