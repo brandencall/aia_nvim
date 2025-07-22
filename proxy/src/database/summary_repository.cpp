@@ -6,7 +6,7 @@ bool insertSummary(const network::ClientRequest &request, const std::string &sum
     try {
         std::optional<Project> project = getProject(request);
         if (project == std::nullopt) {
-            std::cout << "There is not project to insert chart history for." << std::endl;
+            std::cout << "There is not project to insert chat history for." << std::endl;
             return false;
         }
         getDB() << "INSERT INTO summaries (project_ref_id, summary) VALUES (?, ?);" << project->id << summary;

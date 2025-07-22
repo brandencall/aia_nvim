@@ -16,7 +16,7 @@ TEST(SQLiteIntegration, GetRecentConversations) {
       network::Content{"Just say Hello World", harpoonFiles, "", ""}};
   std::string response = "Hello World";
 
-  database::insertProject(clientRequest);
+  database::upsertProject(clientRequest);
   database::insertChat(clientRequest, response);
   std::vector<std::string> result = database::getRecentConversations(clientRequest);
   ASSERT_EQ(result[0], "Just say Hello World Hello World");

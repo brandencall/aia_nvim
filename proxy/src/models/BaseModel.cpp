@@ -7,7 +7,7 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
     std::optional<database::Project> project = database::getProject(request);
     if (!project) {
         std::cout << "There is no project context" << std::endl;
-        return request.content.prompt;
+        return request.content->prompt;
     }
     std::string projectContext = project->context;
     projectContext +=
@@ -18,15 +18,18 @@ std::string BaseModel::processClientRequest(const network::ClientRequest &reques
     return prompt;
 }
 
-std::string BaseModel::processClientContent(const network::Content &content) const {
-    std::string result = processHarpoonContent(content);
-    result += content.gitDiff + "\n\n";
-    return result + content.prompt;
+std::string BaseModel::processClientContent(const std::optional<network::Content> &content) const {
+    if (content) {
+        std::string result = processHarpoonContent(content);
+        result += *content->gitDiff + "\n\n";
+        return result + content->prompt;
+    }
+    return "";
 }
 
-std::string BaseModel::processHarpoonContent(const network::Content &content) const {
+std::string BaseModel::processHarpoonContent(const std::optional<network::Content> &content) const {
     std::string result;
-    for (const auto &file : content.harpoonFiles) {
+    for (const auto &file : *content->harpoonFiles) {
         result += file.file + ": {\n";
         for (const auto &function : file.functions) {
             result += function + "\n";

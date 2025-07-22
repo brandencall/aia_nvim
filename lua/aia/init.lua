@@ -18,6 +18,16 @@ M.setup_aia = function()
         end,
     })
     vim.api.nvim_create_autocmd("User", {
+        pattern = "OnProjectContextSubmit",
+        callback = function(event)
+            local project_id = event.data.project_id
+            local project_context = event.data.input
+            vim.schedule(function()
+                tcp.upsert_project(project_id, project_context)
+            end)
+        end,
+    })
+    vim.api.nvim_create_autocmd("User", {
         pattern = "ServerResponse",
         callback = function(event)
             local response = event.data.response

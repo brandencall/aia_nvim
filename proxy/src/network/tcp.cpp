@@ -116,7 +116,6 @@ std::optional<ClientRequest> handleClient(int clientSocket) {
 
     try {
         std::string cleanMessage = message;
-        std::cout << cleanMessage << '\n';
         json j = json::parse(cleanMessage);
         ClientRequest request = j.get<ClientRequest>();
         return request;

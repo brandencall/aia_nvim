@@ -9,8 +9,8 @@
 
 namespace network {
 void Router::routeRequest(const ClientRequest &request) {
-    if (request.request_type == "new_project") {
-        std::cout << "New Project request" << std::endl;
+    if (request.request_type == "upsert_project") {
+        std::cout << "Project request" << std::endl;
         handleNewProjectRequest(request);
     } else if (request.request_type == "get_project") {
         handleGetProjectRequest(request);
@@ -20,11 +20,11 @@ void Router::routeRequest(const ClientRequest &request) {
 }
 
 void Router::handleNewProjectRequest(const ClientRequest &request) {
-    bool insertedProject = database::insertProject(request);
-    if (insertedProject) {
-        sendMsg(_clientSocket, "Successfully inserted new Project: " + request.project_id);
+    bool upsertedProject = database::upsertProject(request);
+    if (upsertedProject) {
+        sendMsg(_clientSocket, "Successfully upserted new Project: " + request.project_id);
     } else {
-        sendMsg(_clientSocket, "Failed to insert project. Project may already exist.");
+        sendMsg(_clientSocket, "Failed to insert project...");
     }
 }
 

@@ -31,6 +31,7 @@ TEST(ModelFailerTest, ModelSwitchIntegrationTest) {
       network::Content{"Just say Hello World", harpoonFiles, "", ""}};
 
   network::Router *router = new network::Router(-1, modelManager);
+
   router->routeRequest(clientRequest);
 
   ASSERT_EQ(modelManager.getCurrentAvailableModel()->getId(),

@@ -6,7 +6,7 @@
 
 namespace database {
 
-bool insertProject(const network::ClientRequest &request);
+bool upsertProject(const network::ClientRequest &request);
 std::optional<Project> getProject(const network::ClientRequest &request);
 
 } // namespace database

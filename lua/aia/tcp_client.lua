@@ -77,17 +77,13 @@ M.write_prompt = function(content)
     end
 end
 
-M.write_new_project = function(project_id, content)
+M.upsert_project = function(project_id, content)
     if M.client and M.client:is_active() then
         local request = {
-            request_type = "new_project",
+            request_type = "upsert_project",
             project_id = project_id,
             content = {
                 prompt = content,
-                project_id = project_id,
-                harpoon_files = {},
-                git_diff = "",
-                file_structure = ""
             }
         }
         local json_request = vim.json.encode(request)

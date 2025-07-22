@@ -13,11 +13,11 @@ bool insertChat(const network::ClientRequest &request, const std::string &respon
     try {
         std::optional<Project> project = getProject(request);
         if (project == std::nullopt) {
-            std::cout << "There is not project to insert chart history for." << std::endl;
+            std::cout << "There is not project to insert chat history for." << std::endl;
             return false;
         }
         getDB() << "INSERT INTO chats (project_ref_id, prompt, response) VALUES (?, ?, ?);" << project->id
-                << request.content.prompt << response;
+                << request.content->prompt << response;
         return true;
     } catch (const sqlite::sqlite_exception &e) {
         std::cerr << "SQLite error: " << e.what() << std::endl;
@@ -39,7 +39,7 @@ std::vector<Chat> getChatHistory(const Project &project) {
 std::vector<std::string> getRecentConversations(const network::ClientRequest &request) {
     std::optional<Project> project = getProject(request);
     if (project == std::nullopt) {
-        std::cout << "There is not project to get chart history for." << std::endl;
+        std::cout << "There is not project to get chat history for." << std::endl;
         return {};
     }
     std::vector<std::string> result;

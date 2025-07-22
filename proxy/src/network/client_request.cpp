@@ -10,9 +10,21 @@ void from_json(const json &j, HarpoonFile &harpoon) {
 
 void from_json(const json &j, Content &content) {
     j.at("prompt").get_to(content.prompt);
-    j.at("harpoon_files").get_to(content.harpoonFiles);
-    j.at("git_diff").get_to(content.gitDiff);
-    j.at("file_structure").get_to(content.fileStructure);
+    if (j.contains("harpoon_files") && !j.at("harpoon_files").is_null()) {
+        content.harpoonFiles = j.at("harpoon_files").get<std::vector<network::HarpoonFile>>();
+    } else {
+        content.harpoonFiles = std::nullopt;
+    }
+    if (j.contains("git_diff") && !j.at("git_diff").is_null()) {
+        content.gitDiff = j.at("git_diff").get<std::string>();
+    } else {
+        content.gitDiff = std::nullopt;
+    }
+    if (j.contains("file_structure") && !j.at("file_structure").is_null()) {
+        content.fileStructure = j.at("file_structure").get<std::string>();
+    } else {
+        content.fileStructure = std::nullopt;
+    }
 }
 
 void from_json(const json &j, ClientRequest &request) {
