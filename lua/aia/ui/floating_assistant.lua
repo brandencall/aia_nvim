@@ -109,15 +109,13 @@ M.response = function(self, response)
 end
 
 M.create_floating_win = function(self)
-    if not connection_state.is_connected then
-        tcp.connect_tcp()
-    end
-    create_parent_win(self)
-    create_content_win(self)
-    create_prompt_win(self)
-
-    M.setup_auto_close(self)
-    M.on_submit(self)
+    tcp.connect_tcp(function()
+        create_parent_win(self)
+        create_content_win(self)
+        create_prompt_win(self)
+        M.setup_auto_close(self)
+        M.on_submit(self)
+    end)
 end
 
 function M:close_windows()

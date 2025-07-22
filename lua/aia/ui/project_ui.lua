@@ -117,19 +117,16 @@ M.response = function(self, response)
 end
 
 M.create_project_win = function(self)
-    -- try to connect to proxy (floating_assistant)
-    if not connection_state.is_connected then
-        tcp.connect_tcp()
-    end
     local project_id = get_project_id()
     if project_id == "" then
         return
     end
-    open_windows(self, project_id)
-    tcp.get_project(project_id)
-
-    M.setup_auto_close(self)
-    M.on_submit(self, project_id)
+    tcp.connect_tcp(function()
+        open_windows(self, project_id)
+        tcp.get_project(project_id)
+        M.setup_auto_close(self)
+        M.on_submit(self, project_id)
+    end)
 end
 
 function M:close_windows()

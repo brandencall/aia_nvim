@@ -6,9 +6,13 @@ local context = require("aia.context")
 
 M.client = nil
 
-M.connect_tcp = function()
-    if M.client and M.client:is_active() then
-        print('TCP client already connected')
+M.connect_tcp = function(on_connected)
+    if state.get_status() then
+        if on_connected then
+            vim.schedule(function()
+                on_connected()
+            end)
+        end
         return
     end
 
@@ -23,6 +27,11 @@ M.connect_tcp = function()
         end
         state.set_connected(true)
         state.update_status_winbar()
+        if on_connected then
+            vim.schedule(function()
+                on_connected()
+            end)
+        end
 
         M.client:read_start(function(err, data)
             if err then
