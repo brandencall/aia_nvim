@@ -31,7 +31,7 @@ void Router::handleNewProjectRequest(const ClientRequest &request) {
 void Router::handleGetProjectRequest(const ClientRequest &request) {
     std::optional<database::Project> project = database::getProject(request);
     if (project == std::nullopt) {
-        sendMsg(_clientSocket, "No project exists for " + project->project_id);
+        sendMsg(_clientSocket, "No project exists for " + request.project_id);
     } else {
         std::cout << "The project context is: " << project->context << '\n';
         sendMsg(_clientSocket, project->context);
