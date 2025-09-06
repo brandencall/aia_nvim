@@ -17,7 +17,8 @@ M.connect_tcp = function(on_connected)
     end
 
     M.client = vim.uv.new_tcp()
-    local ip = '10.0.0.234'
+    -- Need to change this IP to 10.0.0.210
+    local ip = '10.0.0.210'
     local port = 22222
     M.client:connect(ip, port, function(err)
         if err then
