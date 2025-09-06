@@ -15,7 +15,7 @@ int main() {
     std::filesystem::create_directories("data");
     database::initializeDB();
 
-    const char *ip = "10.0.0.234";
+    const char *ip = "10.0.0.210";
     int port = 22222;
     int serverSocket = network::createServerSocket(ip, port);
     if (serverSocket == -1)
