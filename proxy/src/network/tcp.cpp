@@ -64,14 +64,14 @@ int acceptClient(int serverSocket) {
     std::string desktopIP = "10.0.0.209";
     std::string laptopIP = "10.0.0.234";
 
-    if (clientIPStr != desktopIP || clientIPStr != laptopIP) {
-        std::cout << "Rejected connection " << clientIP << std::endl;
-        close(clientSocket);
-        return -1;
+    if (clientIPStr == desktopIP || clientIPStr == laptopIP) {
+        std::cout << "Accepted connection from " << clientIP << std::endl;
+        return clientSocket;
     }
 
-    std::cout << "Accepted connection from " << clientIP << std::endl;
-    return clientSocket;
+    std::cout << "Rejected connection " << clientIP << std::endl;
+    close(clientSocket);
+    return -1;
 }
 
 void clientSession(int clientSocket, ModelManager &modelManager) {
