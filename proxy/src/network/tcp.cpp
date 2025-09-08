@@ -60,8 +60,11 @@ int acceptClient(int serverSocket) {
     char clientIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP, INET_ADDRSTRLEN);
 
-    std::string allowedIP = "10.0.0.209";
-    if (std::string(clientIP) != allowedIP) {
+    std::string clientIPStr = std::string(clientIP);
+    std::string desktopIP = "10.0.0.209";
+    std::string laptopIP = "10.0.0.234";
+
+    if (clientIPStr != desktopIP || clientIPStr != laptopIP) {
         std::cout << "Rejected connection " << clientIP << std::endl;
         close(clientSocket);
         return -1;
